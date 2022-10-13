@@ -83,7 +83,7 @@ public:
 		}							//nur zum Testen
 		printf("\n");
 		koerper.front().x = x;
-		koerper.front().y = y;
+		koerper.front().y = y; 
 
 		if (richtung == 1) {
 
@@ -166,8 +166,20 @@ public:
 
 };
 
-Gosu::Image hintergrundbild("Hintergrundbild.png");
-Gosu::Sample musik("Hintergrundmusik.mp3");
+//Hier binde ich alle Audio Dateien und Bilder ein die wir verwenden
+
+Gosu::Image hintergrundbild("Hintergrundbild3.png");
+Gosu::Image apfelbild("Apfelbild.png");
+Gosu::Image wall("brickwall.jpg");
+Gosu::Song musik("Hintergrundmusik.mp3");
+Gosu::Sample apfel("Apfel essen.mp3");
+//Gosu::Song gameover("Game Over.mp4");				//geht nicht mit mp4 
+Gosu::Bitmap ueberschrift(50,10);
+Gosu::Bitmap gameover(150,50);
+Gosu::Bitmap anzahl_aepfel; 
+Gosu::Bitmap anzahl_hindernisse; 
+Gosu::Font bla(10);
+Gosu::Image snake("Logo.png");
 
 class GameWindow : public Gosu::Window
 {
@@ -179,6 +191,8 @@ public:
 		set_caption("Snake");
 	}
 	
+	//Initialisierung Werte
+
 	Schlange schlange = Schlange();
 	Schlangenstueck schlangenstueck = Schlangenstueck();
 	int x = 0;
@@ -188,7 +202,7 @@ public:
 	int x_2 = 0;
 	int y_2 = 10;
 	int updatezaehler = 0;
-	int geschwindigkeit = 30;
+	int geschwindigkeit = 30;							//Ladebalken der Geschwindigkeit stufenweise anzeigt?
 	int richtung = 0;
 	int anzahlsteine = 0;
 	int stein_x = 60;
@@ -197,9 +211,10 @@ public:
 	int ergaenzung_y = 0;
 	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
 
-	int anzahl_essen = 0;
-
-
+	int anzahl_essen = 0;								//ausgeben
+	int anzahl_hindernisse = 0;							//ausgeben
+	int hinderniss_x;
+	int hinderniss_y;
 	
 
 	
@@ -215,12 +230,24 @@ public:
 			0.0
 		);*/
 
+		hintergrundbild.draw(240, 150, 0, 1, 1);									//Sarah: Einbindung Hintergrundbild. Bild ist vielleicht nicht das beste xD
+		//bla.draw_text("Score", 700, 10, 0, 7, 7,Gosu::Color::RED, Gosu::BlendMode::BM_ADD);
+		wall.draw(800, 0,0,0.4,0.6);
+		snake.draw(0,0,0,2,2);			//ich konnte nicht widerstehen selbst pixel "art" zu machen, finde das Ergebnis aber selbst blöd xD
+
 		graphics().draw_quad(				//Schlangenkopf (class)
 			schlange.x, schlange.y, schlange.farbe,
 			schlange.x, schlange.y + 5, schlange.farbe,
 			schlange.x + 5, schlange.y, schlange.farbe,
 			schlange.x + 5, schlange.y + 5, schlange.farbe,
 			0.0
+		);
+
+		graphics().draw_quad(			//Für Hinderniss später
+			hinderniss_x, hinderniss_y, Gosu::Color::RED,
+			hinderniss_x, hinderniss_y + 5, Gosu::Color::RED,
+			hinderniss_x + 5, hinderniss_y, Gosu::Color::RED,
+			hinderniss_x + 5, hinderniss_y + 5, Gosu::Color::RED, 0.0
 		);
 
 		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
@@ -273,23 +300,23 @@ public:
 
 
 
-		graphics().draw_quad(				//Essensstein (nur fuer alte Schlange, bei der neuen sind es Schlangenstücke)
+		/*graphics().draw_quad(				//Essensstein (nur fuer alte Schlange, bei der neuen sind es Schlangenstücke)					
 			stein_x, stein_y, Gosu::Color::YELLOW,
 			stein_x, stein_y + 5, Gosu::Color::YELLOW,
 			stein_x + 5, stein_y, Gosu::Color::YELLOW,
 			stein_x + 5, stein_y + 5, Gosu::Color::YELLOW,
 			0.0
-		);
+		);*/
 
-		graphics().draw_quad(				//Menuefeld
+		/*graphics().draw_quad(				//Menuefeld
 			801, 0, Gosu::Color::GRAY,
 			801, 601, Gosu::Color::GRAY,
 			1000, 0, Gosu::Color::GRAY,
 			1000, 601, Gosu::Color::GRAY,
-			0.0
-		);
+			0.0,Gosu::BlendMode::BM_INTERPOLATE					//ersetzt durch ein Bild
+		);*/
 			
-		//hintergrundbild.draw(0, 0, 0, 1, 1, Gosu::AlphaMode::AM_INTERPOLATE);
+		
 
 
 	}
@@ -297,7 +324,8 @@ public:
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
-		//musik.play(40, 3, 1);
+		musik.play(true);		//Hintergrundmusik in Endlosschleife
+		// 
 		//Randbetrachtung
 		if (x == 800) {
 			x = 0;
@@ -417,10 +445,16 @@ public:
 			stein_x = (rand() % 159) * 5;
 			stein_y = (rand() % 119) * 5;
 			anzahlsteine = anzahlsteine + 1;
+			//hinderniss_x = (rand() % 159) * 5;
+			//hinderniss_y = (rand() % 159) * 5;
+			//anzahl_hindernisse = anzahl_hindernisse + 1;
 		}
 
 
 		if (x == stein_x && y == stein_y) {
+
+			apfel.play(1,1,false);
+
 
 			ergaenzung_x = stein_x;
 			ergaenzung_y = stein_y;
@@ -433,7 +467,7 @@ public:
 				geschwindigkeit = geschwindigkeit - 1;
 
 				if (geschwindigkeit == 0) {
-					//was soll dann passieren?? Spiel gewonnen? oder bei Geschwindigkeit = 1 lassen?
+					//was soll dann passieren?? Spiel gewonnen? oder bei Geschwindigkeit = 1 lassen?				Würde die bei 1 lassen und beliebig lang laufen lassen
 				}
 			}
 			
@@ -453,4 +487,4 @@ int main()
 }
 
 
-//Version3 Catrin
+//Version 13.10.18.42
