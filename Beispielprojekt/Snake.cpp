@@ -39,7 +39,7 @@ public:
 	Gosu::Color farbe = Gosu::Color::GREEN;
 	int leben = 3;				//durch Sonderteile Leben dazugewinnen? Oder Punkte abziehen wenn man ein Leben verliert?
 
-	int geschwindigkeit = 30;	//Geschwindigkeitsstartwert
+	int geschwindigkeit = 100;	//Geschwindigkeitsstartwert
 	int richtung = 0;
 
 	std::list<Schlangenstueck> koerper = {Schlangenstueck(75, 50), Schlangenstueck(80,50)};
@@ -123,7 +123,8 @@ public:
 
 };
 
-
+Gosu::Image hintergrundbild("Hintergrundbild.png");
+Gosu::Sample musik("Hintergrundmusik.mp3");
 
 class GameWindow : public Gosu::Window
 {
@@ -154,7 +155,7 @@ public:
 	int anzahl_essen = 0;
 
 
-
+	
 
 	
 
@@ -236,16 +237,15 @@ public:
 			0.0
 		);
 			
-
-		
+		//hintergrundbild.draw(0, 0, 0, 1, 1, Gosu::AlphaMode::AM_INTERPOLATE);
 
 
 	}
-
+	
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
-
+		//musik.play(40, 3, 1);
 		//Randbetrachtung
 		if (x == 800) {
 			x = 0;
