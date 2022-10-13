@@ -6,20 +6,40 @@
 class Schlangenstueck {				//class Schlangenstuecke
 public:
 
-	int x = 100;
-	int y = 100;
+	int x;
+	int y;
 	Gosu::Color farbe = Gosu::Color::GREEN;
+	
 
 	int geschwindigkeit = 30;
 	int richtung = 0;
 
 	Schlangenstueck() {
 
+		x = (rand() % 159) * 5;
+		y = (rand() % 119) * 5;
+		int farbwahl = (rand() % 3);
+
+		if(farbwahl == 0){
+
+			farbe = Gosu::Color::GREEN;
+
+		}
+		else if (farbwahl == 1) {
+
+			farbe = Gosu::Color::BLUE;
+
+		}
+		else if (farbwahl == 2) {
+
+			farbe = Gosu::Color::YELLOW;
+		}
 	}
 
-	Schlangenstueck(int x, int y) {
+	Schlangenstueck(int x, int y, Gosu::Color farbe) {
 		this->x = x;
 		this->y = y;
+		this->farbe = farbe;
 	}
 
 	Schlangenstueck(const Schlangenstueck& copy) {
@@ -39,18 +59,31 @@ public:
 	Gosu::Color farbe = Gosu::Color::GREEN;
 	int leben = 3;				//durch Sonderteile Leben dazugewinnen? Oder Punkte abziehen wenn man ein Leben verliert?
 
-	int geschwindigkeit = 100;	//Geschwindigkeitsstartwert
+	int geschwindigkeit = 10;	//Geschwindigkeitsstartwert
 	int richtung = 0;
 
-	std::list<Schlangenstueck> koerper = {Schlangenstueck(75, 50), Schlangenstueck(80,50)};
+	std::list<Schlangenstueck> koerper = {Schlangenstueck(75, 50, Gosu::Color::GREEN), Schlangenstueck(80,50, Gosu::Color::GREEN), Schlangenstueck(85,50, Gosu::Color::BLUE)};
 
 	void schlangenbewegung() {			//Bewegungsausführung in Abhängigkeit der Richtung
 
-		auto itr1 = koerper.begin();					//noch in Arbeit 
-		for (auto itr2 = itr1++; itr1 != koerper.end(); itr2 = itr1++)
+		/*auto itr1 = map.begin();
+		for (auto itr2 = itr1++; itr1 != map.end(); itr2 = itr1++)
 		{
 			// do stuff
-		}
+		}*/
+
+
+		auto vorderer_teil = koerper.rbegin();					//Schlangenstücke hinterherlaufen lassen
+		for (auto hinterer_teil = vorderer_teil++; vorderer_teil != koerper.rend(); hinterer_teil = vorderer_teil++)
+		{
+			printf("%d ",vorderer_teil->x);		//nur zum Testen
+			hinterer_teil->x = vorderer_teil->x;
+			hinterer_teil->y = vorderer_teil->y;
+
+		}							//nur zum Testen
+		printf("\n");
+		koerper.front().x = x;
+		koerper.front().y = y;
 
 		if (richtung == 1) {
 
@@ -71,6 +104,16 @@ public:
 		ueberprueferaender();
 
 	}
+
+	bool aufsammeln(Schlangenstueck schlangenstueck) {
+		if (schlangenstueck.x == koerper.back().x && schlangenstueck.y == koerper.back().y) {
+			koerper.push_back(schlangenstueck);
+			return true;
+		}
+		return false;
+	}
+
+
 	void gehlinks() {				//Richtungsfestlegung
 		if (richtung != 2) {
 
@@ -152,6 +195,8 @@ public:
 	int stein_y = 55;
 	int ergaenzung_x = 0;
 	int ergaenzung_y = 0;
+	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
+
 	int anzahl_essen = 0;
 
 
@@ -180,7 +225,7 @@ public:
 
 		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
 
-		graphics().draw_quad(				//Schlangenstueck (class)
+		graphics().draw_quad(				//Schlangenstueck vom Koerper (class)
 			it->x, it->y, it->farbe,
 			it->x, it->y + 5, it->farbe,
 			it->x + 5, it->y, it->farbe,
@@ -189,6 +234,13 @@ public:
 		);
 		}
 
+		graphics().draw_quad(				//Schlangenstueck zum Essen (class)
+			schlangenstueck.x, schlangenstueck.y, schlangenstueck.farbe,
+			schlangenstueck.x, schlangenstueck.y + 5, schlangenstueck.farbe,
+			schlangenstueck.x + 5, schlangenstueck.y, schlangenstueck.farbe,
+			schlangenstueck.x + 5, schlangenstueck.y + 5, schlangenstueck.farbe,
+			0.0
+		);
 
 
 
@@ -221,7 +273,7 @@ public:
 
 
 
-		graphics().draw_quad(				//Essensstein
+		graphics().draw_quad(				//Essensstein (nur fuer alte Schlange, bei der neuen sind es Schlangenstücke)
 			stein_x, stein_y, Gosu::Color::YELLOW,
 			stein_x, stein_y + 5, Gosu::Color::YELLOW,
 			stein_x + 5, stein_y, Gosu::Color::YELLOW,
@@ -265,6 +317,9 @@ public:
 		//Was passiert bei den Verschieden Richtungen (class)
 		if (updatezaehler % schlange.geschwindigkeit == 0) {
 			schlange.schlangenbewegung();
+			if (schlange.aufsammeln(schlangenstueck)) {
+				schlangenstueck = Schlangenstueck();
+			}
 
 		}
 
@@ -369,6 +424,7 @@ public:
 
 			ergaenzung_x = stein_x;
 			ergaenzung_y = stein_y;
+			ergaenzung_farbe = 
 			anzahlsteine = 0;
 			anzahl_essen = anzahl_essen + 1;
 
@@ -390,9 +446,11 @@ public:
 // C++ Hauptprogramm
 int main()
 {
+	srand(time(0));				//das die Zufallszahlen wirklich zufällig sind 
+
 	GameWindow window;
 	window.show();
 }
 
 
-//Version Catrin
+//Version3 Catrin
