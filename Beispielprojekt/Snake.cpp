@@ -231,7 +231,7 @@ public:
 		);*/
 
 		hintergrundbild.draw(240, 150, 0, 1, 1);									//Sarah: Einbindung Hintergrundbild. Bild ist vielleicht nicht das beste xD
-		//bla.draw_text("Score", 700, 10, 0, 7, 7,Gosu::Color::RED, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Score", 700, 10, 1, 7, 7,Gosu::Color::RED, Gosu::BlendMode::BM_ADD);
 		wall.draw(800, 0,0,0.4,0.6);
 		snake.draw(0,0,0,2,2);			//ich konnte nicht widerstehen selbst pixel "art" zu machen, finde das Ergebnis aber selbst blöd xD
 
@@ -243,7 +243,7 @@ public:
 			0.0
 		);
 
-		graphics().draw_quad(			//Für Hinderniss später
+		graphics().draw_quad(			//Für Hindernis später
 			hinderniss_x, hinderniss_y, Gosu::Color::RED,
 			hinderniss_x, hinderniss_y + 5, Gosu::Color::RED,
 			hinderniss_x + 5, hinderniss_y, Gosu::Color::RED,
@@ -484,7 +484,20 @@ int main()
 
 	GameWindow window;
 	window.show();
+
 }
 
 
-//Version 13.10.18.42
+//Version 14.10.14.26
+
+/*
+TO-DO 
+
+- Größenverhältnisse --> Variable 
+- (Anfangsbildschirm --> Außengerüst )
+- Hindernisse hinzufügen die bleiben (grau)
+- Sterbebedingung --> Funktion, die aufgerufen wird. --> Gameover
+- Verschiedene Power Ups: Mehrer Punkte oder Punkteabzug
+- Rechts: Menü (Geschwindigkeit, Punktestand, Lautstärkeeinstellung)
+
+*/
