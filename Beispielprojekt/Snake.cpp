@@ -2,6 +2,9 @@
 #include <Gosu/AutoLink.hpp>
 #include <stdlib.h>
 #include<list>
+#include <iostream>
+using namespace std;
+
 
 class Schlangenstueck {				//class Schlangenstuecke
 public:
@@ -169,17 +172,23 @@ public:
 //Hier binde ich alle Audio Dateien und Bilder ein die wir verwenden
 
 Gosu::Image hintergrundbild("Hintergrundbild3.png");
-Gosu::Image apfelbild("Apfelbild.png");
+Gosu::Image musikleise("musikleise.png");
+Gosu::Image musiklaut("musiklaut.png");
+Gosu::Image musikaus("musikaus.png");
 Gosu::Image wall("brickwall.jpg");
+Gosu::Image v12("v12.png");
+Gosu::Image v34("v34.png");
+Gosu::Image v56("v56.png");
+Gosu::Image v78("v78.png");
+Gosu::Image v910("v910.png");
+Gosu::Image menu("menu.png)");
+
+
 Gosu::Song musik("Hintergrundmusik.mp3");
 Gosu::Sample apfel("Apfel essen.mp3");
-//Gosu::Song gameover("Game Over.mp4");				//geht nicht mit mp4 
-Gosu::Bitmap ueberschrift(50,10);
-Gosu::Bitmap gameover(150,50);
-Gosu::Bitmap anzahl_aepfel; 
-Gosu::Bitmap anzahl_hindernisse; 
+
 Gosu::Font bla(10);
-Gosu::Image snake("Logo.png");
+
 
 class GameWindow : public Gosu::Window
 {
@@ -230,10 +239,45 @@ public:
 			0.0
 		);*/
 
+
+		//Bilder
 		hintergrundbild.draw(240, 150, 0, 1, 1);									//Sarah: Einbindung Hintergrundbild. Bild ist vielleicht nicht das beste xD
-		bla.draw_text("Score", 700, 10, 1, 7, 7,Gosu::Color::RED, Gosu::BlendMode::BM_ADD);
-		wall.draw(800, 0,0,0.4,0.6);
-		snake.draw(0,0,0,2,2);			//ich konnte nicht widerstehen selbst pixel "art" zu machen, finde das Ergebnis aber selbst blöd xD
+		wall.draw(800, 0, 0, 0.4, 0.6, Gosu::Color::WHITE, Gosu::BlendMode::BM_INTERPOLATE);
+		//menu.draw(830, 20, 2, 0.5, 0.5);
+		
+		//Menüleiste/Text
+		bla.draw_text("Score: ", 810, 110, 2, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Speed: ", 810, 200, 2, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Volume:", 810, 300, 2, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+
+		//Menüleiste: Icons
+
+		musikaus.draw(800, 320, 2,0.3,0.3);
+		musikleise.draw(850, 320, 2,0.3,0.3);
+		musiklaut.draw(900, 320,2, 0.3 ,0.3);
+
+		if (8 < geschwindigkeit <= 10)
+		{
+			v910.draw(810, 220, 2, 0.5, 0.5);
+		};
+		if (6 < geschwindigkeit <= 8)
+		{
+			v78.draw(810, 220, 3, 0.5, 0.5);
+		};
+		if (4 < geschwindigkeit <= 6)
+		{
+			v56.draw(810, 220, 4, 0.5, 0.5);
+		};
+		if (2 < geschwindigkeit <= 4)
+		{
+			v34.draw(810, 220, 5, 0.5, 0.5);
+		};
+		if (0 <= geschwindigkeit <= 2)
+		{
+			v12.draw(810, 220, 6, 0.5, 0.5);
+		};
+
+
 
 		graphics().draw_quad(				//Schlangenkopf (class)
 			schlange.x, schlange.y, schlange.farbe,
@@ -464,7 +508,7 @@ public:
 
 			if (anzahl_essen % 5 == 0) {
 
-				geschwindigkeit = geschwindigkeit - 1;
+				geschwindigkeit = geschwindigkeit - 1;			//Einteilung in 5 Geschwindigkeitstufen 
 
 				if (geschwindigkeit == 0) {
 					//was soll dann passieren?? Spiel gewonnen? oder bei Geschwindigkeit = 1 lassen?				Würde die bei 1 lassen und beliebig lang laufen lassen
@@ -475,6 +519,7 @@ public:
 			anzahlsteine = 1;
 		}
 	}
+	
 };
 
 // C++ Hauptprogramm
@@ -484,7 +529,7 @@ int main()
 
 	GameWindow window;
 	window.show();
-
+	
 }
 
 
