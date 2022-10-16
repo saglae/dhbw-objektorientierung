@@ -181,7 +181,7 @@ Gosu::Image v34("v34.png");
 Gosu::Image v56("v56.png");
 Gosu::Image v78("v78.png");
 Gosu::Image v910("v910.png");
-Gosu::Image menu("menu.png)");
+//Gosu::Image menu("menu.png)");
 
 
 Gosu::Song musik("Hintergrundmusik.mp3");
