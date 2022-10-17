@@ -64,7 +64,7 @@ public:
 	int y = 300;
 
 	Gosu::Color farbe = Gosu::Color::GREEN;
-	//int leben = 3;				//durch Sonderteile Leben dazugewinnen? Oder Punkte abziehen wenn man ein Leben verliert?
+	
 
 	int geschwindigkeit = 10;	//Geschwindigkeitsstartwert
 	int richtung = 0;
@@ -84,13 +84,13 @@ public:
 		if (richtung != 0) {
 			for (auto hinterer_teil = vorderer_teil++; vorderer_teil != koerper.rend(); hinterer_teil = vorderer_teil++)
 			{
-				printf("%d ", vorderer_teil->x);		//nur zum Testen
+				
 				hinterer_teil->x = vorderer_teil->x;
 				hinterer_teil->y = vorderer_teil->y;
 
 			}
 
-			printf("\n"); //nur zum Testen
+			
 			koerper.front().x = x;
 			koerper.front().y = y;
 		}
@@ -239,10 +239,6 @@ public:
 
 	int x = 0;
 	int y = 0;
-	/*int x_1 = 0;
-	int y_1 = 10;
-	int x_2 = 0;
-	int y_2 = 20;*/
 	int updatezaehler = 0;
 	int geschwindigkeit = 30;							//Ladebalken der Geschwindigkeit stufenweise anzeigt?
 	int richtung = 0;
@@ -357,51 +353,14 @@ public:
 
 
 		
-		/*graphics().draw_quad(				//Schlangenkopf
-			x, y, Gosu::Color::BLUE,
-			x, y + schrittweite, Gosu::Color::BLUE,
-			x + schrittweite, y, Gosu::Color::BLUE,
-			x + schrittweite, y + schrittweite, Gosu::Color::BLUE,
-			0.0
-		);
-
-
-
-		//nur zum Testen der Richtung Schlangengroessenerweiterung 
-		graphics().draw_quad(				//Schlange+1
-			x_1, y_1, Gosu::Color::BLUE,
-			x_1, y_1 + schrittweite, Gosu::Color::BLUE,
-			x_1 + schrittweite, y_1, Gosu::Color::BLUE,
-			x_1 + schrittweite, y_1 + schrittweite, Gosu::Color::BLUE,
-			0.0
-		);
-		graphics().draw_quad(				//Schlange+2
-			x_2, y_2, Gosu::Color::BLUE,
-			x_2, y_2 + schrittweite, Gosu::Color::BLUE,
-			x_2 + schrittweite, y_2, Gosu::Color::BLUE,
-			x_2 + schrittweite, y_2 + schrittweite, Gosu::Color::BLUE,
-			0.0
-		);*/
 
 
 
 
-		/*graphics().draw_quad(				//Essensstein (nur fuer alte Schlange, bei der neuen sind es Schlangenstücke)					
-			stein_x, stein_y, Gosu::Color::YELLOW,
-			stein_x, stein_y + 5, Gosu::Color::YELLOW,
-			stein_x + 5, stein_y, Gosu::Color::YELLOW,
-			stein_x + 5, stein_y + 5, Gosu::Color::YELLOW,
-			0.0
-		);*/
 
-		/*graphics().draw_quad(				//Menuefeld
-			801, 0, Gosu::Color::GRAY,
-			801, 601, Gosu::Color::GRAY,
-			1000, 0, Gosu::Color::GRAY,
-			1000, 601, Gosu::Color::GRAY,
-			0.0,Gosu::BlendMode::BM_INTERPOLATE					//ersetzt durch ein Bild
-		);*/
-			
+
+
+
 		
 
 
@@ -423,45 +382,23 @@ public:
 			//x = x - schrittweite;
 			
 			neue_richtung = 1;
-			/*if (richtung == 2) {
-				richtung = 2;
 
-			}
-			else {
-				richtung = 1;
-			}*/
 			
 		}
 		else if (input().down(Gosu::KB_RIGHT)) {
 			neue_richtung = 2;
 			//x = x + schrittweite;
-			/*if (richtung == 1) {
-				richtung = 1;
-			}
-			else {
-				richtung = 2;
-			}*/
+
 			
 		}
 		else if (input().down(Gosu::KB_DOWN)) {
 			neue_richtung = 3;
-			/*if (richtung == 4) {
-				richtung = 4;
-			}
-			else {
-				richtung = 3;
 
-			}*/
 			
 		}
 		else if (input().down(Gosu::KB_UP)) {
 			neue_richtung = 4;
-			/*if (richtung == 3) {
-				richtung = 3;
-			}
-			else {
-				richtung = 4;
-			}*/
+
 
 		}
 		else if (input().down(Gosu::KB_SPACE)) {
@@ -481,20 +418,7 @@ public:
 				}
 
 		
-		/*//Randbetrachtung
-		if (x == 800) {
-			x = 0;
-		}
-		else if (x == -schrittweite) {
-			x = 800 - schrittweite;
-		}
-		else if (y == 600) {
-			y = 0;
-		}
-		else if (y == -schrittweite) {
-			y = 600 - schrittweite;
-		}
-		*/
+
 		
 
 		updatezaehler = updatezaehler + 1;	//Zaehlt wie oft update aufgerufen wird, fuer Geschwindigkeitsanpassung(FUER BEIDE)
@@ -524,39 +448,7 @@ public:
 
 		}
 
-		//Was passiert bei den verschieden Richtungen
-		
-		/*if (updatezaehler % geschwindigkeit == 0) {
-			if (richtung == 1) {
-				x_2 = x_1;
-				y_2 = y_1;
-				x_1 = x;
-				y_1 = y;
-				x = x - schrittweite;
-			}
-			else if (richtung == 2) {
-				x_2 = x_1;
-				y_2 = y_1;
-				x_1 = x;
-				y_1 = y;
-				x = x + schrittweite;
-			}
-			else if (richtung == 3) {
-				x_2 = x_1;
-				y_2 = y_1;
-				x_1 = x;
-				y_1 = y;
-				y = y + schrittweite;
-			}
-			else if (richtung == 4) {
-				x_2 = x_1;
-				y_2 = y_1;
-				x_1 = x;
-				y_1 = y;
-				y = y - schrittweite;
-			}
-			
-		}*/
+
 
 		
 
@@ -565,14 +457,12 @@ public:
 
 		//gehört zur alten schlange!!!!!!!
 		//neuen Stein erzeugen wenn die Schlange die gleichen x, y Koordinate hat, Geschwindigkeitsanpassung bei 5 zusätzlichen Steinen
-		if (anzahlsteine == 0) {
+		/*if (anzahlsteine == 0) {
 
 			stein_x = (rand() % 800 / schrittweite - 1) * schrittweite;
 			stein_y = (rand() % 600 / schrittweite -1) * schrittweite;
 			anzahlsteine = anzahlsteine + 1;
-			//hinderniss_x = (rand() % 159) * 5;
-			//hinderniss_y = (rand() % 159) * 5;
-			//anzahl_hindernisse = anzahl_hindernisse + 1;
+
 		}
 
 
@@ -597,7 +487,7 @@ public:
 			
 		} else {
 			anzahlsteine = 1;
-		}
+		}*/
 	}
 	
 };
@@ -613,16 +503,16 @@ int main()
 }
 
 
-//Version Catrin17.10.22
+//Gemeinsame Version17.10.22
 
 /*
 TO-DO 
 
-- Größenverhältnisse --> Variable 
-- (Anfangsbildschirm --> Außengerüst )
+- Geschwindigkeitanpassungsfunktion
+- level 2:Farbwahl
 - Hindernisse hinzufügen die bleiben (grau)
-- Sterbebedingung --> Funktion, die aufgerufen wird. --> Gameover
+- Sterbebedingung --> Funktion, die aufgerufen wird (hindernisse)
 - Verschiedene Power Ups: Mehrer Punkte oder Punkteabzug
-- Rechts: Menü (Geschwindigkeit, Punktestand, Lautstärkeeinstellung)
+- Rechts: Menü ( Punktestand, Lautstärkeeinstellung, level1 und level2)
 
 */
