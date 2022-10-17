@@ -282,6 +282,7 @@ public:
 		bla.draw_text("Score: ", 810, 110, 3, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
 		bla.draw_text("Speed: ", 810, 200, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
 		bla.draw_text("Volume:", 810, 300, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		//bla.draw_text(punktestand, 840, 110, 3, 3, 3);  //const string!
 
 		//Menüleiste: Icons
 
@@ -413,6 +414,9 @@ public:
 		musik.play(true);		//Hintergrundmusik in Endlosschleife
 		// 
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
+
+		punktestand = (schlange.koerper.size() * 5) - 15;
+
 		if (input().down(Gosu::KB_LEFT)) {
 			//x = x - schrittweite;
 			
