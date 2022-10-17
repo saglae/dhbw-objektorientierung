@@ -84,13 +84,13 @@ public:
 		if (richtung != 0) {
 			for (auto hinterer_teil = vorderer_teil++; vorderer_teil != koerper.rend(); hinterer_teil = vorderer_teil++)
 			{
-				
+				//printf("%d ", vorderer_teil->x);		//nur zum Testen
 				hinterer_teil->x = vorderer_teil->x;
 				hinterer_teil->y = vorderer_teil->y;
 
 			}
 
-			
+			//printf("\n"); //nur zum Testen
 			koerper.front().x = x;
 			koerper.front().y = y;
 		}
@@ -278,6 +278,7 @@ public:
 		bla.draw_text("Score: ", 810, 110, 3, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
 		bla.draw_text("Speed: ", 810, 200, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
 		bla.draw_text("Volume:", 810, 300, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		//bla.draw_text(punktestand, 840, 110, 3, 3, 3);  //const string!
 
 		//Menüleiste: Icons
 
@@ -340,10 +341,10 @@ public:
 		);
 
 		graphics().draw_quad(			//Für Hindernis später
-			hinderniss_x, hinderniss_y, Gosu::Color::RED,
-			hinderniss_x, hinderniss_y + schrittweite, Gosu::Color::RED,
-			hinderniss_x + schrittweite, hinderniss_y, Gosu::Color::RED,
-			hinderniss_x + schrittweite, hinderniss_y + schrittweite, Gosu::Color::RED, 0.0
+			hinderniss_x, hinderniss_y, Gosu::Color::GRAY,
+			hinderniss_x, hinderniss_y + schrittweite, Gosu::Color::GRAY,
+			hinderniss_x + schrittweite, hinderniss_y, Gosu::Color::GRAY,
+			hinderniss_x + schrittweite, hinderniss_y + schrittweite, Gosu::Color::GRAY, 0.0
 		);
 
 		if (gameover) {
@@ -370,14 +371,11 @@ public:
 	void update() override
 	{
 		musik.play(true);		//Hintergrundmusik in Endlosschleife
-		//
-		// 
-		// 
-		punktestand = (schlange.koerper.size()) * 5;
-		//printf("%d ", punktestand);  //d richtig???? ... nicht hier aufrufen.. sonst 60 mal ???
-		// 
 		// 
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
+
+		punktestand = (schlange.koerper.size() * 5) - 15;
+
 		if (input().down(Gosu::KB_LEFT)) {
 			//x = x - schrittweite;
 			
@@ -443,7 +441,6 @@ public:
 			if (schlange.aufsammeln(schlangenstueck)) {
 				apfel.play(1, 1, false);
 				schlangenstueck = Schlangenstueck();
-				//vllt hier das geräusch zum aufsammeln??
 			}
 
 		}
