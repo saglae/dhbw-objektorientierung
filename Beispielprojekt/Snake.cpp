@@ -194,13 +194,7 @@ public:
 };
 
 
-
-
-		
-
-
-
-//Hier binde ich alle Audio Dateien und Bilder ein die wir verwenden
+//--------------------------------------------------AUDIO UND GRAFIKEN-------------------------------------------------------------
 
 Gosu::Image hintergrundbild("Hintergrundbild3.png");
 Gosu::Image musikleise("musikleise.png");
@@ -214,6 +208,8 @@ Gosu::Image v78("v78.png");
 Gosu::Image v910("v910.png");
 Gosu::Image menu("menu.png");
 Gosu::Image gameover_screen("gameoverscreen.png");
+Gosu::Image level1("level1.png");
+Gosu::Image level2("level2.png");
 
 Gosu::Song musik("Hintergrundmusik.mp3");
 Gosu::Sample apfel("Apfel essen.mp3");
@@ -231,7 +227,7 @@ public:
 		set_caption("Snake");
 	}
 	
-	//Initialisierung Werte
+//--------------------------------------------------INITIALISIERUNG WERTE--------------------------------------------------------
 
 	Schlange schlange = Schlange();
 	Schlangenstueck schlangenstueck = Schlangenstueck();
@@ -240,7 +236,7 @@ public:
 	int x = 0;
 	int y = 0;
 	int updatezaehler = 0;
-	int geschwindigkeit = 30;							//Ladebalken der Geschwindigkeit stufenweise anzeigt?
+	int geschwindigkeit = 30;							
 	int richtung = 0;
 	int neue_richtung = 0;
 	int anzahlsteine = 0;
@@ -258,55 +254,61 @@ public:
 
 	bool gameover = false;								//für die Sterbefunktion
 	int punktestand = 0;
-	
-	
 
-	// Wird bis zu 60x pro Sekunde aufgerufen.
-	// Wenn die Grafikkarte oder der Prozessor nicht mehr hinterherkommen,
-	// dann werden `draw` Aufrufe ausgelassen und die Framerate sinkt
+
+	//------------------------------------------------------------DRAW----------------------------------------------------------------------
 	void draw() override
 	{
 
-
-
 		//Bilder
-		hintergrundbild.draw(240, 150, 0, 1, 1);									//Sarah: Einbindung Hintergrundbild. Bild ist vielleicht nicht das beste xD
+		hintergrundbild.draw(240, 150, 0, 1, 1);									
 		wall.draw(800, 0, 3, 0.4, 0.6, Gosu::Color::WHITE, Gosu::BlendMode::BM_INTERPOLATE);
 		menu.draw(830, 0, 3, 0.5, 0.5);
 		
-		//Menüleiste/Text
-		bla.draw_text("Score: ", 810, 110, 3, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
-		bla.draw_text("Speed: ", 810, 200, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
-		bla.draw_text("Volume:", 810, 300, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
-		//bla.draw_text(punktestand, 840, 110, 3, 3, 3);  //const string!
 
-		//Menüleiste: Icons
+		//Lautstärkeicons
+
+		bla.draw_text("Volume:", 810, 300, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
 
 		musikaus.draw(800, 320, 3,0.3,0.3);
 		musikleise.draw(850, 320, 3,0.3,0.3);
 		musiklaut.draw(900, 320,3, 0.3 ,0.3);
 
-		if ((8 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 10))
-		{
+		//Geschwindigkeitsanzeige
+
+		bla.draw_text("Speed: ", 810, 200, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+
+		if ((8 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 10)){
 			v910.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if ((6 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 8))
-		{
-			v78.draw(810, 220, 4, 0.5, 0.5);
+		if ((6 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 8)){
+			v78.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if ((4 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 6))
-		{
-			v56.draw(810, 220, 5, 0.5, 0.5);
+		if ((4 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 6)){
+			v56.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if ((2 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 4))
-		{
-			v34.draw(810, 220, 6, 0.5, 0.5);
+		if ((2 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 4)){
+			v34.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if ((1 <= schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 2))
-		{
-			v12.draw(810, 220, 7, 0.5, 0.5);
+		if ((1 <= schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 2)){
+			v12.draw(810, 220, 3, 0.5, 0.5);
 		};
 
+		//Levelanzeige
+
+		if (punktestand >= 2)		// ist nur zwei um gut testen zu können  
+		{
+			level2.draw(810, 430, 3, 1, 1);
+		}
+		else
+		{
+			level1.draw(810, 400, 3, 1, 1);
+		}
+
+		//Scoreanzeige
+
+		bla.draw_text("Score: ", 810, 110, 3, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		//bla.draw_text(punktestand, 840, 110, 3, 3, 3);  //const string!
 
 		graphics().draw_quad(				//Schlangenkopf (class)
 			schlange.x, schlange.y, schlange.farbe,
@@ -350,23 +352,10 @@ public:
 		if (gameover) {
 			gameover_screen.draw(0, 0, 2, 1.18, 1.18);
 		}
-
-
-
-		
-
-
-
-
-
-
-
-
-		
-
-
 	}
 	
+	//----------------------------------------------------------UPDATE-------------------------------------------------------------------
+
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
@@ -415,10 +404,6 @@ public:
 					return;
 				}
 
-		
-
-		
-
 		updatezaehler = updatezaehler + 1;	//Zaehlt wie oft update aufgerufen wird, fuer Geschwindigkeitsanpassung(FUER BEIDE)
 		//Was passiert bei den Verschieden Richtungen (class)
 		if (updatezaehler % schlange.geschwindigkeit == 0) {
@@ -444,12 +429,6 @@ public:
 			}
 
 		}
-
-
-
-		
-
-
 
 
 		//gehört zur alten schlange!!!!!!!
@@ -488,6 +467,8 @@ public:
 	}
 	
 };
+
+//--------------------------------------------------------MAIN----------------------------------------------------
 
 // C++ Hauptprogramm
 int main()
