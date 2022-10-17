@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include<list>
 #include <iostream>
+
 using namespace std;
+
 
 
 class Schlangenstueck {				//class Schlangenstuecke
@@ -19,8 +21,9 @@ public:
 
 	Schlangenstueck() {
 
-		x = (rand() % 159) * 5;
-		y = (rand() % 119) * 5;
+		int schrittweite = 10;
+		x = (rand() % ((800 / schrittweite) - 1) * schrittweite);
+		y = (rand() % ((600 / schrittweite) - 1) * schrittweite);
 		int farbwahl = (rand() % 3);
 
 		if(farbwahl == 0){
@@ -55,19 +58,20 @@ class Schlange {				//class Schlange
 public:
 	int spielfeld_x = 800;
 	int spielfeld_y = 600;
-	int schrittweite = 5;
+	int schrittweite = 10;
 
-	int x = 70;					//Schlangenstartwert
-	int y = 50;
+	int x = 400;					//Schlangenstartwert
+	int y = 300;
+
 	Gosu::Color farbe = Gosu::Color::GREEN;
-	int leben = 3;				//durch Sonderteile Leben dazugewinnen? Oder Punkte abziehen wenn man ein Leben verliert?
+	//int leben = 3;				//durch Sonderteile Leben dazugewinnen? Oder Punkte abziehen wenn man ein Leben verliert?
 
 	int geschwindigkeit = 10;	//Geschwindigkeitsstartwert
 	int richtung = 0;
 
-	std::list<Schlangenstueck> koerper = {Schlangenstueck(75, 50, Gosu::Color::GREEN), Schlangenstueck(80,50, Gosu::Color::GREEN), Schlangenstueck(85,50, Gosu::Color::BLUE)};
+	std::list<Schlangenstueck> koerper = {Schlangenstueck(410, 300, Gosu::Color::GREEN), Schlangenstueck(420,300, Gosu::Color::GREEN), Schlangenstueck(430,300, Gosu::Color::BLUE)};
 
-	void schlangenbewegung() {			//Bewegungsausführung in Abhängigkeit der Richtung
+	bool schlangenbewegung() {			//Bewegungsausführung in Abhängigkeit der Richtung
 
 		/*auto itr1 = map.begin();
 		for (auto itr2 = itr1++; itr1 != map.end(); itr2 = itr1++)
@@ -77,16 +81,19 @@ public:
 
 
 		auto vorderer_teil = koerper.rbegin();					//Schlangenstücke hinterherlaufen lassen
-		for (auto hinterer_teil = vorderer_teil++; vorderer_teil != koerper.rend(); hinterer_teil = vorderer_teil++)
-		{
-			printf("%d ",vorderer_teil->x);		//nur zum Testen
-			hinterer_teil->x = vorderer_teil->x;
-			hinterer_teil->y = vorderer_teil->y;
+		if (richtung != 0) {
+			for (auto hinterer_teil = vorderer_teil++; vorderer_teil != koerper.rend(); hinterer_teil = vorderer_teil++)
+			{
+				printf("%d ", vorderer_teil->x);		//nur zum Testen
+				hinterer_teil->x = vorderer_teil->x;
+				hinterer_teil->y = vorderer_teil->y;
 
-		}							//nur zum Testen
-		printf("\n");
-		koerper.front().x = x;
-		koerper.front().y = y; 
+			}
+
+			printf("\n"); //nur zum Testen
+			koerper.front().x = x;
+			koerper.front().y = y;
+		}
 
 		if (richtung == 1) {
 
@@ -105,6 +112,7 @@ public:
 			y = y - schrittweite;
 		}
 		ueberprueferaender();
+		return schlange_getroffen(x, y);
 
 	}
 
@@ -167,7 +175,27 @@ public:
 
 	}
 
+	bool schlange_getroffen(int x, int y) {
+		for (auto it = koerper.begin(); it != koerper.end(); it++) {
+
+			if (it->x == x && it->y == y) {
+				return true;
+			}
+
+
+		}
+		return false;
+
+	}
+
 };
+
+
+
+
+		
+
+
 
 //Hier binde ich alle Audio Dateien und Bilder ein die wir verwenden
 
@@ -181,7 +209,7 @@ Gosu::Image v34("v34.png");
 Gosu::Image v56("v56.png");
 Gosu::Image v78("v78.png");
 Gosu::Image v910("v910.png");
-Gosu::Image menu("menu.png)");
+//Gosu::Image menu("menu.png)");
 
 
 Gosu::Song musik("Hintergrundmusik.mp3");
@@ -204,27 +232,33 @@ public:
 
 	Schlange schlange = Schlange();
 	Schlangenstueck schlangenstueck = Schlangenstueck();
+	
+
 	int x = 0;
 	int y = 0;
-	int x_1 = 0;
-	int y_1 = 5;
+	/*int x_1 = 0;
+	int y_1 = 10;
 	int x_2 = 0;
-	int y_2 = 10;
+	int y_2 = 20;*/
 	int updatezaehler = 0;
 	int geschwindigkeit = 30;							//Ladebalken der Geschwindigkeit stufenweise anzeigt?
 	int richtung = 0;
+	int neue_richtung = 0;
 	int anzahlsteine = 0;
 	int stein_x = 60;
-	int stein_y = 55;
+	int stein_y = 70;
 	int ergaenzung_x = 0;
 	int ergaenzung_y = 0;
 	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
-
+	int schrittweite = 10;
+	
 	int anzahl_essen = 0;								//ausgeben
 	int anzahl_hindernisse = 0;							//ausgeben
 	int hinderniss_x;
 	int hinderniss_y;
-	
+
+	bool gameover = false;								//für die Sterbefunktion
+	int punktestand = 0;
 
 	
 
@@ -233,11 +267,7 @@ public:
 	// dann werden `draw` Aufrufe ausgelassen und die Framerate sinkt
 	void draw() override
 	{
-		/*graphics().draw_line(
-			10, 20, Gosu::Color::RED,
-			200, 100, Gosu::Color::GREEN,
-			0.0
-		);*/
+
 
 
 		//Bilder
@@ -278,49 +308,57 @@ public:
 		};
 
 
-
 		graphics().draw_quad(				//Schlangenkopf (class)
 			schlange.x, schlange.y, schlange.farbe,
-			schlange.x, schlange.y + 5, schlange.farbe,
-			schlange.x + 5, schlange.y, schlange.farbe,
-			schlange.x + 5, schlange.y + 5, schlange.farbe,
+			schlange.x, schlange.y + schrittweite, schlange.farbe,
+			schlange.x + schrittweite, schlange.y, schlange.farbe,
+			schlange.x + schrittweite, schlange.y + schrittweite, schlange.farbe,
+			0.0
+		);
+
+
+
+		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
+
+			graphics().draw_quad(				//Schlangenstueck vom Koerper (class)
+				it->x, it->y, it->farbe,
+				it->x, it->y + schrittweite, it->farbe,
+				it->x + schrittweite, it->y, it->farbe,
+				it->x + schrittweite, it->y + schrittweite, it->farbe,
+				0.0
+			);
+		}
+	
+		
+
+
+		graphics().draw_quad(				//Schlangenstueck zum Essen (class)
+			schlangenstueck.x, schlangenstueck.y, schlangenstueck.farbe,
+			schlangenstueck.x, schlangenstueck.y + schrittweite, schlangenstueck.farbe,
+			schlangenstueck.x + schrittweite, schlangenstueck.y, schlangenstueck.farbe,
+			schlangenstueck.x + schrittweite, schlangenstueck.y + schrittweite, schlangenstueck.farbe,
 			0.0
 		);
 
 		graphics().draw_quad(			//Für Hindernis später
 			hinderniss_x, hinderniss_y, Gosu::Color::RED,
-			hinderniss_x, hinderniss_y + 5, Gosu::Color::RED,
-			hinderniss_x + 5, hinderniss_y, Gosu::Color::RED,
-			hinderniss_x + 5, hinderniss_y + 5, Gosu::Color::RED, 0.0
+			hinderniss_x, hinderniss_y + schrittweite, Gosu::Color::RED,
+			hinderniss_x + schrittweite, hinderniss_y, Gosu::Color::RED,
+			hinderniss_x + schrittweite, hinderniss_y + schrittweite, Gosu::Color::RED, 0.0
 		);
 
-		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
-
-		graphics().draw_quad(				//Schlangenstueck vom Koerper (class)
-			it->x, it->y, it->farbe,
-			it->x, it->y + 5, it->farbe,
-			it->x + 5, it->y, it->farbe,
-			it->x + 5, it->y + 5, it->farbe,
-			0.0
-		);
+		if (gameover) {
+			bla.draw_text("Game Over", 380, 300, 2, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
 		}
-
-		graphics().draw_quad(				//Schlangenstueck zum Essen (class)
-			schlangenstueck.x, schlangenstueck.y, schlangenstueck.farbe,
-			schlangenstueck.x, schlangenstueck.y + 5, schlangenstueck.farbe,
-			schlangenstueck.x + 5, schlangenstueck.y, schlangenstueck.farbe,
-			schlangenstueck.x + 5, schlangenstueck.y + 5, schlangenstueck.farbe,
-			0.0
-		);
 
 
 
 		
-		graphics().draw_quad(				//Schlangenkopf
+		/*graphics().draw_quad(				//Schlangenkopf
 			x, y, Gosu::Color::BLUE,
-			x, y + 5, Gosu::Color::BLUE,
-			x + 5, y, Gosu::Color::BLUE,
-			x + 5, y + 5, Gosu::Color::BLUE,
+			x, y + schrittweite, Gosu::Color::BLUE,
+			x + schrittweite, y, Gosu::Color::BLUE,
+			x + schrittweite, y + schrittweite, Gosu::Color::BLUE,
 			0.0
 		);
 
@@ -329,18 +367,19 @@ public:
 		//nur zum Testen der Richtung Schlangengroessenerweiterung 
 		graphics().draw_quad(				//Schlange+1
 			x_1, y_1, Gosu::Color::BLUE,
-			x_1, y_1 + 5, Gosu::Color::BLUE,
-			x_1 + 5, y_1, Gosu::Color::BLUE,
-			x_1 + 5, y_1 + 5, Gosu::Color::BLUE,
+			x_1, y_1 + schrittweite, Gosu::Color::BLUE,
+			x_1 + schrittweite, y_1, Gosu::Color::BLUE,
+			x_1 + schrittweite, y_1 + schrittweite, Gosu::Color::BLUE,
 			0.0
 		);
 		graphics().draw_quad(				//Schlange+2
 			x_2, y_2, Gosu::Color::BLUE,
-			x_2, y_2 + 5, Gosu::Color::BLUE,
-			x_2 + 5, y_2, Gosu::Color::BLUE,
-			x_2 + 5, y_2 + 5, Gosu::Color::BLUE,
+			x_2, y_2 + schrittweite, Gosu::Color::BLUE,
+			x_2 + schrittweite, y_2, Gosu::Color::BLUE,
+			x_2 + schrittweite, y_2 + schrittweite, Gosu::Color::BLUE,
 			0.0
-		);
+		);*/
+
 
 
 
@@ -370,124 +409,156 @@ public:
 	{
 		musik.play(true);		//Hintergrundmusik in Endlosschleife
 		// 
-		//Randbetrachtung
+		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
+		if (input().down(Gosu::KB_LEFT)) {
+			//x = x - schrittweite;
+			
+			neue_richtung = 1;
+			/*if (richtung == 2) {
+				richtung = 2;
+
+			}
+			else {
+				richtung = 1;
+			}*/
+			
+		}
+		else if (input().down(Gosu::KB_RIGHT)) {
+			neue_richtung = 2;
+			//x = x + schrittweite;
+			/*if (richtung == 1) {
+				richtung = 1;
+			}
+			else {
+				richtung = 2;
+			}*/
+			
+		}
+		else if (input().down(Gosu::KB_DOWN)) {
+			neue_richtung = 3;
+			/*if (richtung == 4) {
+				richtung = 4;
+			}
+			else {
+				richtung = 3;
+
+			}*/
+			
+		}
+		else if (input().down(Gosu::KB_UP)) {
+			neue_richtung = 4;
+			/*if (richtung == 3) {
+				richtung = 3;
+			}
+			else {
+				richtung = 4;
+			}*/
+
+		}
+		else if (input().down(Gosu::KB_SPACE)) {
+
+			if (gameover) {
+				schlange = Schlange();
+				gameover = false;
+			}
+			else {
+			schlange.pause();
+			richtung = 0;
+			}
+		}
+
+		if (gameover) {
+					return;
+				}
+
+		
+		/*//Randbetrachtung
 		if (x == 800) {
 			x = 0;
 		}
-		else if (x == -5) {
-			x = 795;
+		else if (x == -schrittweite) {
+			x = 800 - schrittweite;
 		}
 		else if (y == 600) {
 			y = 0;
 		}
-		else if (y == -5) {
-			y = 595;
+		else if (y == -schrittweite) {
+			y = 600 - schrittweite;
 		}
+		*/
 		
 
 		updatezaehler = updatezaehler + 1;	//Zaehlt wie oft update aufgerufen wird, fuer Geschwindigkeitsanpassung(FUER BEIDE)
 		//Was passiert bei den Verschieden Richtungen (class)
 		if (updatezaehler % schlange.geschwindigkeit == 0) {
-			schlange.schlangenbewegung();
+			if (neue_richtung == 1) {
+				schlange.gehlinks();
+			}
+			else if(neue_richtung == 2) {
+				schlange.gehrechts();
+
+			}
+			else if (neue_richtung == 3) {
+				schlange.gehnachunten();
+			}
+			else if (neue_richtung == 4) {
+				schlange.gehnachoben();
+			}
+
+			gameover = schlange.schlangenbewegung();
+
 			if (schlange.aufsammeln(schlangenstueck)) {
 				schlangenstueck = Schlangenstueck();
+				//vllt hier das geräusch zum aufsammeln??
 			}
 
 		}
 
 		//Was passiert bei den verschieden Richtungen
 		
-		if (updatezaehler % geschwindigkeit == 0) {
+		/*if (updatezaehler % geschwindigkeit == 0) {
 			if (richtung == 1) {
 				x_2 = x_1;
 				y_2 = y_1;
 				x_1 = x;
 				y_1 = y;
-				x = x - 5;
+				x = x - schrittweite;
 			}
 			else if (richtung == 2) {
 				x_2 = x_1;
 				y_2 = y_1;
 				x_1 = x;
 				y_1 = y;
-				x = x + 5;
+				x = x + schrittweite;
 			}
 			else if (richtung == 3) {
 				x_2 = x_1;
 				y_2 = y_1;
 				x_1 = x;
 				y_1 = y;
-				y = y + 5;
+				y = y + schrittweite;
 			}
 			else if (richtung == 4) {
 				x_2 = x_1;
 				y_2 = y_1;
 				x_1 = x;
 				y_1 = y;
-				y = y - 5;
+				y = y - schrittweite;
 			}
 			
-		}
+		}*/
 
 		
 
 
-		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
-		if (input().down(Gosu::KB_LEFT)) {
-			//x = x - 5;
-			schlange.gehlinks();
-			if (richtung == 2) {
-				richtung = 2;
-
-			}
-			else {
-				richtung = 1;
-			}
-			
-		}
-		else if (input().down(Gosu::KB_RIGHT)) {
-			schlange.gehrechts();
-			//x = x + 5;
-			if (richtung == 1) {
-				richtung = 1;
-			}
-			else {
-				richtung = 2;
-			}
-			
-		}
-		else if (input().down(Gosu::KB_DOWN)) {
-			schlange.gehnachunten();
-			if (richtung == 4) {
-				richtung = 4;
-			}
-			else {
-				richtung = 3;
-
-			}
-			
-		}
-		else if (input().down(Gosu::KB_UP)) {
-			schlange.gehnachoben();
-			if (richtung == 3) {
-				richtung = 3;
-			}
-			else {
-				richtung = 4;
-			}
-
-		}
-		else if (input().down(Gosu::KB_SPACE)) {
-			schlange.pause();
-			richtung = 0;
-		}
 
 
+		//gehört zur alten schlange!!!!!!!
 		//neuen Stein erzeugen wenn die Schlange die gleichen x, y Koordinate hat, Geschwindigkeitsanpassung bei 5 zusätzlichen Steinen
 		if (anzahlsteine == 0) {
 
-			stein_x = (rand() % 159) * 5;
-			stein_y = (rand() % 119) * 5;
+			stein_x = (rand() % 800 / schrittweite - 1) * schrittweite;
+			stein_y = (rand() % 600 / schrittweite -1) * schrittweite;
 			anzahlsteine = anzahlsteine + 1;
 			//hinderniss_x = (rand() % 159) * 5;
 			//hinderniss_y = (rand() % 159) * 5;
@@ -533,7 +604,7 @@ int main()
 }
 
 
-//Version 14.10.14.26
+//Version Catrin16.10.22
 
 /*
 TO-DO 
