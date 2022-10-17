@@ -210,7 +210,7 @@ Gosu::Image v56("v56.png");
 Gosu::Image v78("v78.png");
 Gosu::Image v910("v910.png");
 Gosu::Image menu("menu.png");
-
+Gosu::Image gameover_screen("gameoverscreen.png");
 
 Gosu::Song musik("Hintergrundmusik.mp3");
 Gosu::Sample apfel("Apfel essen.mp3");
@@ -272,39 +272,39 @@ public:
 
 		//Bilder
 		hintergrundbild.draw(240, 150, 0, 1, 1);									//Sarah: Einbindung Hintergrundbild. Bild ist vielleicht nicht das beste xD
-		wall.draw(800, 0, 0, 0.4, 0.6, Gosu::Color::WHITE, Gosu::BlendMode::BM_INTERPOLATE);
-		menu.draw(830, 0, 2, 0.5, 0.5);
+		wall.draw(800, 0, 3, 0.4, 0.6, Gosu::Color::WHITE, Gosu::BlendMode::BM_INTERPOLATE);
+		menu.draw(830, 0, 3, 0.5, 0.5);
 		
 		//Menüleiste/Text
-		bla.draw_text("Score: ", 810, 110, 2, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
-		bla.draw_text("Speed: ", 810, 200, 2, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
-		bla.draw_text("Volume:", 810, 300, 2, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Score: ", 810, 110, 3, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Speed: ", 810, 200, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Volume:", 810, 300, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
 
 		//Menüleiste: Icons
 
-		musikaus.draw(800, 320, 2,0.3,0.3);
-		musikleise.draw(850, 320, 2,0.3,0.3);
-		musiklaut.draw(900, 320,2, 0.3 ,0.3);
+		musikaus.draw(800, 320, 3,0.3,0.3);
+		musikleise.draw(850, 320, 3,0.3,0.3);
+		musiklaut.draw(900, 320,3, 0.3 ,0.3);
 
 		if ((8 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 10))
 		{
-			v910.draw(810, 220, 2, 0.5, 0.5);
+			v910.draw(810, 220, 3, 0.5, 0.5);
 		};
 		if ((6 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 8))
 		{
-			v78.draw(810, 220, 3, 0.5, 0.5);
+			v78.draw(810, 220, 4, 0.5, 0.5);
 		};
 		if ((4 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 6))
 		{
-			v56.draw(810, 220, 4, 0.5, 0.5);
+			v56.draw(810, 220, 5, 0.5, 0.5);
 		};
 		if ((2 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 4))
 		{
-			v34.draw(810, 220, 5, 0.5, 0.5);
+			v34.draw(810, 220, 6, 0.5, 0.5);
 		};
 		if ((1 <= schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 2))
 		{
-			v12.draw(810, 220, 6, 0.5, 0.5);
+			v12.draw(810, 220, 7, 0.5, 0.5);
 		};
 
 
@@ -348,7 +348,7 @@ public:
 		);
 
 		if (gameover) {
-			bla.draw_text("Game Over", 380, 300, 2, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+			gameover_screen.draw(0, 0, 2, 1.18, 1.18);
 		}
 
 
