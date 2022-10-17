@@ -173,6 +173,9 @@
   <ItemGroup>
     <Image Include="rakete.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Snake.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
