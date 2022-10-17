@@ -214,6 +214,7 @@ public:
 
 	}
 
+
 	void farbmodus_aktivieren() {
 		umfaerben(Gosu::Color::GREEN);
 		farbmodus = true;
@@ -232,6 +233,42 @@ public:
 	}
 
 
+	bool essgeraeusch(int x, int y)
+	{
+		if (this->x == x && this->y == y){ return true;}
+		else { return false; }
+	}
+
+	//Geschwindigkeitsanpassungsfunktion 
+	//printf("%d ", geschwindigkeit); 
+
+
+};
+
+class hindernis
+{
+public: 
+	int x;
+	int y;
+	int breite = 10;
+
+	hindernis()
+	{
+		x = (rand() % ((800 / breite) - 1) * breite);
+		y = (rand() % ((600 / breite) - 1) * breite);
+	};
+
+	bool hindernis_getroffen(Schlange s)
+	{
+		if ((s.x == this->x) && (s.y == this->y))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 };
 
 
@@ -249,11 +286,12 @@ Gosu::Image v78("v78.png");
 Gosu::Image v910("v910.png");
 Gosu::Image menu("menu.png");
 Gosu::Image gameover_screen("gameoverscreen.png");
-Gosu::Image level1("level1.png");
-Gosu::Image level2("level2.png");
+Gosu::Image farbmodus("farbmodus.png");
+Gosu::Image dunkelmodus("dunkelmodus.png");
 
 Gosu::Song musik("Hintergrundmusik.mp3");
-Gosu::Sample apfel("Apfel essen.mp3");
+Gosu::Song gameover_song("Game-Over.mp3");
+Gosu::Song apfel("Apfel essen.mp3");
 
 Gosu::Font bla(10);
 
@@ -287,6 +325,7 @@ public:
 	int ergaenzung_y = 0;
 	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
 	int schrittweite = 10;
+
 	bool schon_gedrueckt = false;
 
 	int anzahl_essen = 0;								//ausgeben
@@ -294,9 +333,13 @@ public:
 	int hinderniss_x;
 	int hinderniss_y;
 
+
 	bool gameover = false;								//für die Sterbefunktion
 	int punktestand = 0;
+	double set_volume = 0.5;
+	
 
+	vector<hindernis> hindernisse;
 
 	//------------------------------------------------------------DRAW----------------------------------------------------------------------
 	void draw() override
@@ -315,6 +358,7 @@ public:
 		musikaus.draw(800, 320, 3,0.3,0.3);
 		musikleise.draw(850, 320, 3,0.3,0.3);
 		musiklaut.draw(900, 320,3, 0.3 ,0.3);
+
 
 		//Geschwindigkeitsanzeige
 
@@ -338,19 +382,19 @@ public:
 
 		//Levelanzeige
 
-		if (punktestand >= 2)		// ist nur zwei um gut testen zu können  
+		if (punktestand >= 2)
 		{
-			level2.draw(810, 430, 3, 1, 1);
+			farbmodus.draw(810, 450, 3, 1, 1);
 		}
 		else
 		{
-			level1.draw(810, 400, 3, 1, 1);
-		}
+			dunkelmodus.draw(810, 450, 3, 1, 1);
+		};
 
 		//Scoreanzeige
 
-		bla.draw_text("Score: ", 810, 110, 3, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
-		//bla.draw_text(punktestand, 840, 110, 3, 3, 3);  //const string!
+		bla.draw_text("Score: ", 810, 110, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text(to_string(punktestand), 820, 145, 3, 3, 3, Gosu::Color::GREEN);
 
 		graphics().draw_quad(				//Schlangenkopf (class)
 			schlange.x, schlange.y, schlange.farbe,
@@ -359,6 +403,7 @@ public:
 			schlange.x + schlange.schrittweite, schlange.y + schlange.schrittweite, schlange.farbe,
 			0.0
 		);
+
 
 
 
@@ -395,12 +440,15 @@ public:
 			0.0 
 		);
 
-		graphics().draw_quad(			//Für Hindernis später
-			hinderniss_x, hinderniss_y, Gosu::Color::GRAY,
-			hinderniss_x, hinderniss_y + schrittweite, Gosu::Color::GRAY,
-			hinderniss_x + schrittweite, hinderniss_y, Gosu::Color::GRAY,
-			hinderniss_x + schrittweite, hinderniss_y + schrittweite, Gosu::Color::GRAY, 0.0
-		);
+		for (auto hindernis : hindernisse)
+		{
+			graphics().draw_quad(			
+				hindernis.x, hindernis.y, Gosu::Color::GRAY,
+				hindernis.x, hindernis.y + schrittweite, Gosu::Color::GRAY,
+				hindernis.x + schrittweite, hindernis.y, Gosu::Color::GRAY,
+				hindernis.x + schrittweite, hindernis.y + schrittweite, Gosu::Color::GRAY, 0.0
+			);
+		};
 
 		if (gameover) {
 			gameover_screen.draw(0, 0, 2, 1.18, 1.18);
@@ -412,8 +460,52 @@ public:
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
+		//Lautstärkeeinstellung
+
+		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 860 && input().mouse_x() > 800 && input().mouse_y() < 370 && input().mouse_y() > 340)
+		{
+			set_volume = 0;
+		};
+		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 900 && input().mouse_x() > 860 && input().mouse_y() < 370 && input().mouse_y() > 340)
+		{
+			set_volume = 0.5;
+		};
+		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 965 && input().mouse_x() > 910 && input().mouse_y() < 370 && input().mouse_y() > 340)
+		{
+			set_volume = 1;
+		};
+
+		musik.set_volume(set_volume);
 		musik.play(true);		//Hintergrundmusik in Endlosschleife
-		// 
+		
+		
+
+		if (schlange.essgeraeusch(schlangenstueck.x, schlangenstueck.y))					//ist nur 1/6 Sekunde an, wie verlängern?
+		{
+			//musik.pause();
+			//apfel.play(false);
+			//void Gosu::sleep(100);
+			//musik.play(true);
+		}
+
+		for (auto hindernis : hindernisse)
+		{
+			if (hindernis.hindernis_getroffen(schlange))
+			{
+				gameover = true;
+				break;
+			};
+
+		}
+		if (gameover){																	//das klappt noch nicht *************++++++++++++++++***************+
+					musik.stop();
+					gameover_song.set_volume(set_volume);
+					gameover_song.play(false);
+					hindernisse.clear();
+				};
+
+
+		
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
 
 		if (input().down(Gosu::KB_F)) {
@@ -469,34 +561,26 @@ public:
 
 		if (input().down(Gosu::KB_LEFT)) {
 			//x = x - schrittweite;
-			
 			neue_richtung = 1;
-
-			
 		}
 		else if (input().down(Gosu::KB_RIGHT)) {
 			neue_richtung = 2;
 			//x = x + schrittweite;
-
-			
 		}
 		else if (input().down(Gosu::KB_DOWN)) {
 			neue_richtung = 3;
-
-			
 		}
 		else if (input().down(Gosu::KB_UP)) {
 			neue_richtung = 4;
-
-
 		}
+
 		else if (input().down(Gosu::KB_P)) {
+
 
 			schlange.pause();
 			neue_richtung = 0; //geändert von richtung
 		
 		}
-
 		if (gameover) {
 					return;
 				}
@@ -521,10 +605,18 @@ public:
 			schlange.schlangenbewegung();
 
 			if (schlange.aufsammeln(schlangenstueck)) {
-				apfel.play(1, 1, false);
+
+				//apfel.play(1, 1, false);
 				punktestand = (schlange.koerper.size() * 5) - 15;
 				//printf("%d ", punktestand);
+
+				
+
 				schlangenstueck = Schlangenstueck();
+				hindernisse.push_back(hindernis());
+
+				if (punktestand > 10) { hindernisse.push_back(hindernis()); };
+				if (punktestand > 20) { hindernisse.push_back(hindernis()); };
 			}
 			gameover = !schlange.lebt;
 
@@ -588,9 +680,9 @@ TO-DO
 
 - Geschwindigkeitanpassungsfunktion
 - level 2:Farbwahl
-- Hindernisse hinzufügen die bleiben (grau)
-- Sterbebedingung --> Funktion, die aufgerufen wird (hindernisse)
+
+- Soundeffekte (essen und sterben)
 - Verschiedene Power Ups: Mehrer Punkte oder Punkteabzug
-- Rechts: Menü ( Punktestand, Lautstärkeeinstellung, level1 und level2)
+- Rechts: Menü (Punktestand)
 
 */
