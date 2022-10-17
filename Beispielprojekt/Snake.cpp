@@ -14,14 +14,14 @@ public:
 	int x;
 	int y;
 	Gosu::Color farbe = Gosu::Color::GREEN;
-	
+	int schrittweite = 10;
 
 	int geschwindigkeit = 30;
 	int richtung = 0;
 
 	Schlangenstueck() {
 
-		int schrittweite = 10;
+		
 		x = (rand() % ((800 / schrittweite) - 1) * schrittweite);
 		y = (rand() % ((600 / schrittweite) - 1) * schrittweite);
 		int farbwahl = (rand() % 3);
@@ -188,6 +188,9 @@ public:
 
 	}
 
+	//Geschwindigkeitsanpassungsfunktion 
+	//printf("%d ", geschwindigkeit); 
+
 };
 
 
@@ -259,7 +262,7 @@ public:
 
 	bool gameover = false;								//für die Sterbefunktion
 	int punktestand = 0;
-
+	
 	
 
 	// Wird bis zu 60x pro Sekunde aufgerufen.
@@ -310,9 +313,9 @@ public:
 
 		graphics().draw_quad(				//Schlangenkopf (class)
 			schlange.x, schlange.y, schlange.farbe,
-			schlange.x, schlange.y + schrittweite, schlange.farbe,
-			schlange.x + schrittweite, schlange.y, schlange.farbe,
-			schlange.x + schrittweite, schlange.y + schrittweite, schlange.farbe,
+			schlange.x, schlange.y + schlange.schrittweite, schlange.farbe,
+			schlange.x + schlange.schrittweite, schlange.y, schlange.farbe,
+			schlange.x + schlange.schrittweite, schlange.y + schlange.schrittweite, schlange.farbe,
 			0.0
 		);
 
@@ -322,9 +325,9 @@ public:
 
 			graphics().draw_quad(				//Schlangenstueck vom Koerper (class)
 				it->x, it->y, it->farbe,
-				it->x, it->y + schrittweite, it->farbe,
-				it->x + schrittweite, it->y, it->farbe,
-				it->x + schrittweite, it->y + schrittweite, it->farbe,
+				it->x, it->y + schlange.schrittweite, it->farbe,
+				it->x + schlange.schrittweite, it->y, it->farbe,
+				it->x + schlange.schrittweite, it->y + schlange.schrittweite, it->farbe,
 				0.0
 			);
 		}
@@ -334,10 +337,10 @@ public:
 
 		graphics().draw_quad(				//Schlangenstueck zum Essen (class)
 			schlangenstueck.x, schlangenstueck.y, schlangenstueck.farbe,
-			schlangenstueck.x, schlangenstueck.y + schrittweite, schlangenstueck.farbe,
-			schlangenstueck.x + schrittweite, schlangenstueck.y, schlangenstueck.farbe,
-			schlangenstueck.x + schrittweite, schlangenstueck.y + schrittweite, schlangenstueck.farbe,
-			0.0
+			schlangenstueck.x, schlangenstueck.y + schlangenstueck.schrittweite, schlangenstueck.farbe,
+			schlangenstueck.x + schlangenstueck.schrittweite, schlangenstueck.y, schlangenstueck.farbe,
+			schlangenstueck.x + schlangenstueck.schrittweite, schlangenstueck.y + schlangenstueck.schrittweite, schlangenstueck.farbe,
+			0.0 
 		);
 
 		graphics().draw_quad(			//Für Hindernis später
@@ -408,7 +411,6 @@ public:
 	void update() override
 	{
 		musik.play(true);		//Hintergrundmusik in Endlosschleife
-
 		// 
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
 		if (input().down(Gosu::KB_LEFT)) {
@@ -464,7 +466,7 @@ public:
 			}
 			else {
 			schlange.pause();
-			richtung = 0;
+			neue_richtung = 0; //geändert von richtung
 			}
 		}
 
@@ -604,7 +606,7 @@ int main()
 }
 
 
-//Version Catrin16.10.22
+//Version Catrin17.10.22
 
 /*
 TO-DO 
