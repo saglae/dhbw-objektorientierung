@@ -254,6 +254,7 @@ public:
 
 	bool gameover = false;								//für die Sterbefunktion
 	int punktestand = 0;
+	double set_volume = 0.5;
 
 
 	//------------------------------------------------------------DRAW----------------------------------------------------------------------
@@ -273,6 +274,7 @@ public:
 		musikaus.draw(800, 320, 3,0.3,0.3);
 		musikleise.draw(850, 320, 3,0.3,0.3);
 		musiklaut.draw(900, 320,3, 0.3 ,0.3);
+
 
 		//Geschwindigkeitsanzeige
 
@@ -296,7 +298,7 @@ public:
 
 		//Levelanzeige
 
-		if (punktestand >= 2)		// ist nur zwei um gut testen zu können  
+		if (punktestand >= 20)		 
 		{
 			level2.draw(810, 430, 3, 1, 1);
 		}
@@ -359,8 +361,24 @@ public:
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
+		//Lautstärkeeinstellung
+
+		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 860 && input().mouse_x() > 800 && input().mouse_y() < 370 && input().mouse_y() > 340)
+		{
+			set_volume = 0;
+		};
+		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 900 && input().mouse_x() > 860 && input().mouse_y() < 370 && input().mouse_y() > 340)
+		{
+			set_volume = 0.5;
+		};
+		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 965 && input().mouse_x() > 910 && input().mouse_y() < 370 && input().mouse_y() > 340)
+		{
+			set_volume = 1;
+		};
+		musik.set_volume(set_volume);
 		musik.play(true);		//Hintergrundmusik in Endlosschleife
-		// 
+
+		
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
 
 		punktestand = (schlange.koerper.size() * 5) - 15;
