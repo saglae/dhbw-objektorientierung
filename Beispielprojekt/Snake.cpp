@@ -205,6 +205,18 @@ public:
 		x = (rand() % ((800 / breite) - 1) * breite);
 		y = (rand() % ((600 / breite) - 1) * breite);
 	};
+
+	bool hindernis_getroffen(Schlange s)
+	{
+		if ((s.x == this->x) && (s.y == this->y))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 };
 
 
@@ -309,14 +321,14 @@ public:
 
 		//Levelanzeige
 
-		if (punktestand >= 2)		 
+		if (punktestand >= 2)
 		{
-			farbmodus.draw(810, 400, 3, 1, 1);
+			farbmodus.draw(810, 450, 3, 1, 1);
 		}
 		else
 		{
-			dunkelmodus.draw(810, 400, 3, 1, 1);
-		}
+			dunkelmodus.draw(810, 450, 3, 1, 1);
+		};
 
 		//Scoreanzeige
 
@@ -399,6 +411,15 @@ public:
 			hindernisse.clear();
 		};
 
+		for (auto hindernis : hindernisse)
+		{
+			if (hindernis.hindernis_getroffen(schlange))
+			{
+				gameover = true;
+				break;
+			};
+
+		}
 
 		
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
