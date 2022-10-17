@@ -18,6 +18,7 @@ public:
 
 	int geschwindigkeit = 30;
 	int richtung = 0;
+	
 
 	Schlangenstueck() {
 
@@ -64,14 +65,17 @@ public:
 	int y = 300;
 
 	Gosu::Color farbe = Gosu::Color::GREEN;
-	
+	bool farbmodus = false;
 
 	int geschwindigkeit = 10;	//Geschwindigkeitsstartwert
 	int richtung = 0;
+	bool lebt = true;
 
-	std::list<Schlangenstueck> koerper = {Schlangenstueck(410, 300, Gosu::Color::GREEN), Schlangenstueck(420,300, Gosu::Color::GREEN), Schlangenstueck(430,300, Gosu::Color::BLUE)};
+	std::list<Schlangenstueck> koerper = {Schlangenstueck(410, 300, Gosu::Color::GREEN), Schlangenstueck(420,300, Gosu::Color::GREEN), Schlangenstueck(430,300, Gosu::Color::GREEN)};
+	std::list<Schlangenstueck> zwischenspeicher = {};
 
-	bool schlangenbewegung() {			//Bewegungsausführung in Abhängigkeit der Richtung
+
+	void schlangenbewegung() {			//Bewegungsausführung in Abhängigkeit der Richtung
 
 		/*auto itr1 = map.begin();
 		for (auto itr2 = itr1++; itr1 != map.end(); itr2 = itr1++)
@@ -112,13 +116,35 @@ public:
 			y = y - schrittweite;
 		}
 		ueberprueferaender();
-		return schlange_getroffen(x, y);
+		lebt = !schlange_getroffen(x, y);
 
 	}
 
+
+
+
 	bool aufsammeln(Schlangenstueck schlangenstueck) {
-		if (schlangenstueck.x == koerper.back().x && schlangenstueck.y == koerper.back().y) {
-			koerper.push_back(schlangenstueck);
+
+		
+		if (zwischenspeicher.size() > 0 && zwischenspeicher.front().x == koerper.back().x && zwischenspeicher.front().y == koerper.back().y) {
+			koerper.push_back(zwischenspeicher.front());
+			zwischenspeicher.pop_front();
+
+			if (geschwindigkeit != 1 && (koerper.size() - 3) % 5 == 0) {
+				geschwindigkeit = geschwindigkeit - 1;
+				//printf("%d ", geschwindigkeit);
+			}
+			
+		}	
+
+		if (schlangenstueck.x == x && schlangenstueck.y == y) {
+			if (farbmodus == false || schlangenstueck.farbe == farbe) {
+				zwischenspeicher.push_back(schlangenstueck);
+
+			}
+			else {
+				lebt = false;
+			}
 			return true;
 		}
 		return false;
@@ -188,8 +214,23 @@ public:
 
 	}
 
-	//Geschwindigkeitsanpassungsfunktion 
-	//printf("%d ", geschwindigkeit); 
+	void farbmodus_aktivieren() {
+		umfaerben(Gosu::Color::GREEN);
+		farbmodus = true;
+
+	}
+
+	void umfaerben(Gosu::Color farbe) {
+		for (auto it = koerper.begin(); it != koerper.end(); it++) {
+			it->farbe = farbe;
+		}
+		for (auto it = zwischenspeicher.begin(); it != zwischenspeicher.end(); it++) {
+			it->farbe = farbe;
+		}
+		this->farbe = farbe;
+
+	}
+
 
 };
 
@@ -246,7 +287,8 @@ public:
 	int ergaenzung_y = 0;
 	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
 	int schrittweite = 10;
-	
+	bool schon_gedrueckt = false;
+
 	int anzahl_essen = 0;								//ausgeben
 	int anzahl_hindernisse = 0;							//ausgeben
 	int hinderniss_x;
@@ -330,6 +372,17 @@ public:
 				0.0
 			);
 		}
+
+		for (auto it = schlange.zwischenspeicher.begin(); it != schlange.zwischenspeicher.end(); it++) {
+
+			graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
+				it->x, it->y, it->farbe,
+				it->x, it->y + schlange.schrittweite, it->farbe,
+				it->x + schlange.schrittweite, it->y, it->farbe,
+				it->x + schlange.schrittweite, it->y + schlange.schrittweite, it->farbe,
+				0.0
+			);
+		}
 	
 		
 
@@ -363,7 +416,56 @@ public:
 		// 
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
 
-		punktestand = (schlange.koerper.size() * 5) - 15;
+		if (input().down(Gosu::KB_F)) {
+			
+			if (schlange.farbmodus) {
+				schlange.farbmodus = false;
+			}
+			else {
+				schlange.farbmodus_aktivieren();
+			}
+
+		}
+		if (schon_gedrueckt == false && input().down(Gosu::KB_SPACE) && schlange.farbmodus) {
+			schon_gedrueckt = true;
+
+
+
+			if (schlange.farbe == Gosu::Color::GREEN) {
+			
+				schlange.umfaerben(Gosu::Color::BLUE);
+			}
+			else if (schlange.farbe == Gosu::Color::BLUE) {
+				schlange.umfaerben(Gosu::Color::YELLOW);
+			}
+			else if (schlange.farbe == Gosu::Color::YELLOW){
+				schlange.umfaerben(Gosu::Color::FUCHSIA);
+		
+			}
+			else if (schlange.farbe == Gosu::Color::FUCHSIA) {
+				schlange.umfaerben(Gosu::Color::AQUA);
+			}
+			else if (schlange.farbe == Gosu::Color::AQUA) {
+				schlange.umfaerben(Gosu::Color::GREEN);
+			}
+
+
+		}
+		if(input().down(Gosu::KB_SPACE) == false) {
+
+			schon_gedrueckt = false;
+		}
+		else {			
+			if (gameover) {
+				schlange = Schlange();
+				neue_richtung = 0;
+				gameover = false;
+			}
+
+		}
+
+
+		
 
 		if (input().down(Gosu::KB_LEFT)) {
 			//x = x - schrittweite;
@@ -388,16 +490,11 @@ public:
 
 
 		}
-		else if (input().down(Gosu::KB_SPACE)) {
+		else if (input().down(Gosu::KB_P)) {
 
-			if (gameover) {
-				schlange = Schlange();
-				gameover = false;
-			}
-			else {
 			schlange.pause();
 			neue_richtung = 0; //geändert von richtung
-			}
+		
 		}
 
 		if (gameover) {
@@ -421,12 +518,15 @@ public:
 				schlange.gehnachoben();
 			}
 
-			gameover = schlange.schlangenbewegung();
+			schlange.schlangenbewegung();
 
 			if (schlange.aufsammeln(schlangenstueck)) {
 				apfel.play(1, 1, false);
+				punktestand = (schlange.koerper.size() * 5) - 15;
+				//printf("%d ", punktestand);
 				schlangenstueck = Schlangenstueck();
 			}
+			gameover = !schlange.lebt;
 
 		}
 
