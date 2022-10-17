@@ -193,6 +193,20 @@ public:
 
 };
 
+class hindernis
+{
+public: 
+	int x;
+	int y;
+	int breite = 10;
+
+	hindernis()
+	{
+		x = (rand() % ((800 / breite) - 1) * breite);
+		y = (rand() % ((600 / breite) - 1) * breite);
+	};
+};
+
 
 //--------------------------------------------------AUDIO UND GRAFIKEN-------------------------------------------------------------
 
@@ -212,6 +226,7 @@ Gosu::Image level1("level1.png");
 Gosu::Image level2("level2.png");
 
 Gosu::Song musik("Hintergrundmusik.mp3");
+Gosu::Song gameover_song("Game-Over.mp3");
 Gosu::Sample apfel("Apfel essen.mp3");
 
 Gosu::Font bla(10);
@@ -246,16 +261,12 @@ public:
 	int ergaenzung_y = 0;
 	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
 	int schrittweite = 10;
-	
-	int anzahl_essen = 0;								//ausgeben
-	int anzahl_hindernisse = 0;							//ausgeben
-	int hinderniss_x;
-	int hinderniss_y;
 
 	bool gameover = false;								//für die Sterbefunktion
 	int punktestand = 0;
 	double set_volume = 0.5;
 
+	vector<hindernis> hindernisse;
 
 	//------------------------------------------------------------DRAW----------------------------------------------------------------------
 	void draw() override
@@ -344,12 +355,15 @@ public:
 			0.0 
 		);
 
-		graphics().draw_quad(			//Für Hindernis später
-			hinderniss_x, hinderniss_y, Gosu::Color::GRAY,
-			hinderniss_x, hinderniss_y + schrittweite, Gosu::Color::GRAY,
-			hinderniss_x + schrittweite, hinderniss_y, Gosu::Color::GRAY,
-			hinderniss_x + schrittweite, hinderniss_y + schrittweite, Gosu::Color::GRAY, 0.0
-		);
+		for (auto hindernis : hindernisse)
+		{
+			graphics().draw_quad(			//Für Hindernis später
+				hindernis.x, hindernis.y, Gosu::Color::GRAY,
+				hindernis.x, hindernis.y + schrittweite, Gosu::Color::GRAY,
+				hindernis.x + schrittweite, hindernis.y, Gosu::Color::GRAY,
+				hindernis.x + schrittweite, hindernis.y + schrittweite, Gosu::Color::GRAY, 0.0
+			);
+		};
 
 		if (gameover) {
 			gameover_screen.draw(0, 0, 2, 1.18, 1.18);
@@ -377,6 +391,14 @@ public:
 		};
 		musik.set_volume(set_volume);
 		musik.play(true);		//Hintergrundmusik in Endlosschleife
+		
+		if (gameover){																	//das klappt noch nicht *************++++++++++++++++***************+
+			musik.stop();
+			gameover_song.set_volume(set_volume);
+			gameover_song.play(false);
+			hindernisse.clear();
+		};
+
 
 		
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
@@ -385,29 +407,19 @@ public:
 
 		if (input().down(Gosu::KB_LEFT)) {
 			//x = x - schrittweite;
-			
 			neue_richtung = 1;
-
-			
 		}
 		else if (input().down(Gosu::KB_RIGHT)) {
 			neue_richtung = 2;
 			//x = x + schrittweite;
-
-			
 		}
 		else if (input().down(Gosu::KB_DOWN)) {
 			neue_richtung = 3;
-
-			
 		}
 		else if (input().down(Gosu::KB_UP)) {
 			neue_richtung = 4;
-
-
 		}
 		else if (input().down(Gosu::KB_SPACE)) {
-
 			if (gameover) {
 				schlange = Schlange();
 				gameover = false;
@@ -417,7 +429,6 @@ public:
 			neue_richtung = 0; //geändert von richtung
 			}
 		}
-
 		if (gameover) {
 					return;
 				}
@@ -444,6 +455,7 @@ public:
 			if (schlange.aufsammeln(schlangenstueck)) {
 				apfel.play(1, 1, false);
 				schlangenstueck = Schlangenstueck();
+				hindernisse.push_back(hindernis());
 			}
 
 		}
