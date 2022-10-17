@@ -181,7 +181,7 @@ Gosu::Image v34("v34.png");
 Gosu::Image v56("v56.png");
 Gosu::Image v78("v78.png");
 Gosu::Image v910("v910.png");
-//Gosu::Image menu("menu.png)");
+Gosu::Image menu("menu.png");
 
 
 Gosu::Song musik("Hintergrundmusik.mp3");
@@ -243,7 +243,7 @@ public:
 		//Bilder
 		hintergrundbild.draw(240, 150, 0, 1, 1);									//Sarah: Einbindung Hintergrundbild. Bild ist vielleicht nicht das beste xD
 		wall.draw(800, 0, 0, 0.4, 0.6, Gosu::Color::WHITE, Gosu::BlendMode::BM_INTERPOLATE);
-		//menu.draw(830, 20, 2, 0.5, 0.5);
+		menu.draw(830, 0, 2, 0.5, 0.5);
 		
 		//Menüleiste/Text
 		bla.draw_text("Score: ", 810, 110, 2, 3, 3,Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
@@ -256,23 +256,23 @@ public:
 		musikleise.draw(850, 320, 2,0.3,0.3);
 		musiklaut.draw(900, 320,2, 0.3 ,0.3);
 
-		if (8 < geschwindigkeit <= 10)
+		if ((8 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 10))
 		{
 			v910.draw(810, 220, 2, 0.5, 0.5);
 		};
-		if (6 < geschwindigkeit <= 8)
+		if ((6 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 8))
 		{
 			v78.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if (4 < geschwindigkeit <= 6)
+		if ((4 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 6))
 		{
 			v56.draw(810, 220, 4, 0.5, 0.5);
 		};
-		if (2 < geschwindigkeit <= 4)
+		if ((2 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 4))
 		{
 			v34.draw(810, 220, 5, 0.5, 0.5);
 		};
-		if (0 <= geschwindigkeit <= 2)
+		if ((1 <= schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 2))
 		{
 			v12.draw(810, 220, 6, 0.5, 0.5);
 		};
