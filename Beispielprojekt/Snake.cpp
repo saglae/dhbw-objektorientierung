@@ -508,6 +508,7 @@ public:
 			gameover = schlange.schlangenbewegung();
 
 			if (schlange.aufsammeln(schlangenstueck)) {
+				apfel.play(1, 1, false);
 				schlangenstueck = Schlangenstueck();
 				//vllt hier das geräusch zum aufsammeln??
 			}
@@ -568,7 +569,6 @@ public:
 
 		if (x == stein_x && y == stein_y) {
 
-			apfel.play(1,1,false);
 
 
 			ergaenzung_x = stein_x;
