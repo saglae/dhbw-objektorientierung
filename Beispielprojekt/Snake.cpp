@@ -222,8 +222,8 @@ Gosu::Image v78("v78.png");
 Gosu::Image v910("v910.png");
 Gosu::Image menu("menu.png");
 Gosu::Image gameover_screen("gameoverscreen.png");
-Gosu::Image level1("level1.png");
-Gosu::Image level2("level2.png");
+Gosu::Image farbmodus("farbmodus.png");
+Gosu::Image dunkelmodus("dunkelmodus.png");
 
 Gosu::Song musik("Hintergrundmusik.mp3");
 Gosu::Song gameover_song("Game-Over.mp3");
@@ -309,13 +309,13 @@ public:
 
 		//Levelanzeige
 
-		if (punktestand >= 20)		 
+		if (punktestand >= 2)		 
 		{
-			level2.draw(810, 430, 3, 1, 1);
+			farbmodus.draw(810, 400, 3, 1, 1);
 		}
 		else
 		{
-			level1.draw(810, 400, 3, 1, 1);
+			dunkelmodus.draw(810, 400, 3, 1, 1);
 		}
 
 		//Scoreanzeige
