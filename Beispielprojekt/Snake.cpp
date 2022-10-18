@@ -18,13 +18,14 @@ public:
 
 	int geschwindigkeit = 30;
 	int richtung = 0;
+	
 
 	Schlangenstueck() {
 
 		
 		x = (rand() % ((800 / schrittweite) - 1) * schrittweite);
 		y = (rand() % ((600 / schrittweite) - 1) * schrittweite);
-		int farbwahl = (rand() % 3);
+		int farbwahl = (rand() % 5);
 
 		if(farbwahl == 0){
 
@@ -39,6 +40,14 @@ public:
 		else if (farbwahl == 2) {
 
 			farbe = Gosu::Color::YELLOW;
+		}
+		else if (farbwahl == 3) {
+
+			farbe = Gosu::Color::FUCHSIA;
+		}
+		else if (farbwahl == 4) {
+
+			farbe = Gosu::Color::AQUA;
 		}
 	}
 
@@ -64,14 +73,17 @@ public:
 	int y = 300;
 
 	Gosu::Color farbe = Gosu::Color::GREEN;
-	
+	bool farbmodus = false;
 
 	int geschwindigkeit = 10;	//Geschwindigkeitsstartwert
 	int richtung = 0;
+	bool lebt = true;
 
-	std::list<Schlangenstueck> koerper = {Schlangenstueck(410, 300, Gosu::Color::GREEN), Schlangenstueck(420,300, Gosu::Color::GREEN), Schlangenstueck(430,300, Gosu::Color::BLUE)};
+	std::list<Schlangenstueck> koerper = {Schlangenstueck(410, 300, Gosu::Color::GREEN), Schlangenstueck(420,300, Gosu::Color::GREEN), Schlangenstueck(430,300, Gosu::Color::GREEN)};
+	std::list<Schlangenstueck> zwischenspeicher = {};
 
-	bool schlangenbewegung() {			//Bewegungsausführung in Abhängigkeit der Richtung
+
+	void schlangenbewegung() {			//Bewegungsausführung in Abhängigkeit der Richtung
 
 		/*auto itr1 = map.begin();
 		for (auto itr2 = itr1++; itr1 != map.end(); itr2 = itr1++)
@@ -112,13 +124,35 @@ public:
 			y = y - schrittweite;
 		}
 		ueberprueferaender();
-		return schlange_getroffen(x, y);
+		lebt = !schlange_getroffen(x, y);
 
 	}
 
+
+
+
 	bool aufsammeln(Schlangenstueck schlangenstueck) {
-		if (schlangenstueck.x == koerper.back().x && schlangenstueck.y == koerper.back().y) {
-			koerper.push_back(schlangenstueck);
+
+		
+		if (zwischenspeicher.size() > 0 && zwischenspeicher.front().x == koerper.back().x && zwischenspeicher.front().y == koerper.back().y) {
+			koerper.push_back(zwischenspeicher.front());
+			zwischenspeicher.pop_front();
+
+			if (geschwindigkeit != 1 && (koerper.size() - 3) % 5 == 0) {
+				geschwindigkeit = geschwindigkeit - 1;
+				//printf("%d ", geschwindigkeit);
+			}
+			
+		}	
+
+		if (schlangenstueck.x == x && schlangenstueck.y == y) {
+			if (farbmodus == false || schlangenstueck.farbe == farbe) {
+				zwischenspeicher.push_back(schlangenstueck);
+
+			}
+			else {
+				lebt = false;
+			}
 			return true;
 		}
 		return false;
@@ -188,6 +222,25 @@ public:
 
 	}
 
+
+	void farbmodus_aktivieren() {
+		umfaerben(Gosu::Color::GREEN);
+		farbmodus = true;
+
+	}
+
+	void umfaerben(Gosu::Color farbe) {
+		for (auto it = koerper.begin(); it != koerper.end(); it++) {
+			it->farbe = farbe;
+		}
+		for (auto it = zwischenspeicher.begin(); it != zwischenspeicher.end(); it++) {
+			it->farbe = farbe;
+		}
+		this->farbe = farbe;
+
+	}
+
+
 	bool essgeraeusch(int x, int y)
 	{
 		if (this->x == x && this->y == y){ return true;}
@@ -196,6 +249,7 @@ public:
 
 	//Geschwindigkeitsanpassungsfunktion 
 	//printf("%d ", geschwindigkeit); 
+
 
 };
 
@@ -269,16 +323,24 @@ public:
 	int x = 0;
 	int y = 0;
 	int updatezaehler = 0;
-	int geschwindigkeit = 30;							
+	int geschwindigkeit = 30; //noch gebraucht???						
 	int richtung = 0;
 	int neue_richtung = 0;
-	int anzahlsteine = 0;
-	int stein_x = 60;
-	int stein_y = 70;
-	int ergaenzung_x = 0;
-	int ergaenzung_y = 0;
+	//int anzahlsteine = 0;
+	//int stein_x = 60;
+	//int stein_y = 70;
+	//int ergaenzung_x = 0;
+	//int ergaenzung_y = 0;
 	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
 	int schrittweite = 10;
+
+	bool schon_gedrueckt = false;
+
+	//int anzahl_essen = 0;								//ausgeben
+	int anzahl_hindernisse = 0;							//ausgeben
+	int hinderniss_x;
+	int hinderniss_y;
+
 
 	bool gameover = false;								//für die Sterbefunktion
 	int punktestand = 0;
@@ -356,6 +418,17 @@ public:
 		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
 
 			graphics().draw_quad(				//Schlangenstueck vom Koerper (class)
+				it->x, it->y, it->farbe,
+				it->x, it->y + schlange.schrittweite, it->farbe,
+				it->x + schlange.schrittweite, it->y, it->farbe,
+				it->x + schlange.schrittweite, it->y + schlange.schrittweite, it->farbe,
+				0.0
+			);
+		}
+
+		for (auto it = schlange.zwischenspeicher.begin(); it != schlange.zwischenspeicher.end(); it++) {
+
+			graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
 				it->x, it->y, it->farbe,
 				it->x, it->y + schlange.schrittweite, it->farbe,
 				it->x + schlange.schrittweite, it->y, it->farbe,
@@ -443,7 +516,56 @@ public:
 		
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
 
-		punktestand = (schlange.koerper.size() * 5) - 15;
+		if (input().down(Gosu::KB_F)) {
+			
+			if (schlange.farbmodus) {
+				schlange.farbmodus = false;
+			}
+			else {
+				schlange.farbmodus_aktivieren();
+			}
+
+		}
+		if (schon_gedrueckt == false && input().down(Gosu::KB_SPACE) && schlange.farbmodus) {
+			schon_gedrueckt = true;
+
+
+
+			if (schlange.farbe == Gosu::Color::GREEN) {
+			
+				schlange.umfaerben(Gosu::Color::BLUE);
+			}
+			else if (schlange.farbe == Gosu::Color::BLUE) {
+				schlange.umfaerben(Gosu::Color::YELLOW);
+			}
+			else if (schlange.farbe == Gosu::Color::YELLOW){
+				schlange.umfaerben(Gosu::Color::FUCHSIA);
+		
+			}
+			else if (schlange.farbe == Gosu::Color::FUCHSIA) {
+				schlange.umfaerben(Gosu::Color::AQUA);
+			}
+			else if (schlange.farbe == Gosu::Color::AQUA) {
+				schlange.umfaerben(Gosu::Color::GREEN);
+			}
+
+
+		}
+		if(input().down(Gosu::KB_SPACE) == false) {
+
+			schon_gedrueckt = false;
+		}
+		else {			
+			if (gameover) {
+				schlange = Schlange();
+				neue_richtung = 0;
+				gameover = false;
+			}
+
+		}
+
+
+		
 
 		if (input().down(Gosu::KB_LEFT)) {
 			//x = x - schrittweite;
@@ -459,15 +581,13 @@ public:
 		else if (input().down(Gosu::KB_UP)) {
 			neue_richtung = 4;
 		}
-		else if (input().down(Gosu::KB_SPACE)) {
-			if (gameover) {
-				schlange = Schlange();
-				gameover = false;
-			}
-			else {
+
+		else if (input().down(Gosu::KB_P)) {
+
+
 			schlange.pause();
 			neue_richtung = 0; //geändert von richtung
-			}
+		
 		}
 		if (gameover) {
 					return;
@@ -490,53 +610,30 @@ public:
 				schlange.gehnachoben();
 			}
 
-			gameover = schlange.schlangenbewegung();
+			schlange.schlangenbewegung();
 
 			if (schlange.aufsammeln(schlangenstueck)) {
+
+				//apfel.play(1, 1, false);
+				punktestand = (schlange.koerper.size() * 5) - 10;		//fängt er bei 0 an ?? das erste hat er nicht mitgezählt, vorher 15...vllt reagiertr er aber auch nicht weil die schlangengröße zu dem zeitpunkt noch nicht verlängert ist 
+				//printf("%d ", punktestand);
+				if (schlange.farbmodus == true) {						//mehr punkte im Farbmodus, funktioniert noch nicht, weil auch die Farbumstellung noch nicht immer klappt vllt 
+					punktestand = punktestand + 5;
+				}
 				
+
 				schlangenstueck = Schlangenstueck();
 				hindernisse.push_back(hindernis());
 
 				if (punktestand > 10) { hindernisse.push_back(hindernis()); };
 				if (punktestand > 20) { hindernisse.push_back(hindernis()); };
 			}
+			gameover = !schlange.lebt;
 
 		}
 
 
-		//gehört zur alten schlange!!!!!!!
-		//neuen Stein erzeugen wenn die Schlange die gleichen x, y Koordinate hat, Geschwindigkeitsanpassung bei 5 zusätzlichen Steinen
-		/*if (anzahlsteine == 0) {
 
-			stein_x = (rand() % 800 / schrittweite - 1) * schrittweite;
-			stein_y = (rand() % 600 / schrittweite -1) * schrittweite;
-			anzahlsteine = anzahlsteine + 1;
-
-		}
-
-
-		if (x == stein_x && y == stein_y) {
-
-
-
-			ergaenzung_x = stein_x;
-			ergaenzung_y = stein_y;
-			ergaenzung_farbe = 
-			anzahlsteine = 0;
-			anzahl_essen = anzahl_essen + 1;
-
-			if (anzahl_essen % 5 == 0) {
-
-				geschwindigkeit = geschwindigkeit - 1;			//Einteilung in 5 Geschwindigkeitstufen 
-
-				if (geschwindigkeit == 0) {
-					//was soll dann passieren?? Spiel gewonnen? oder bei Geschwindigkeit = 1 lassen?				Würde die bei 1 lassen und beliebig lang laufen lassen
-				}
-			}
-			
-		} else {
-			anzahlsteine = 1;
-		}*/
 	}
 	
 };
@@ -554,7 +651,7 @@ int main()
 }
 
 
-//Gemeinsame Version17.10.22
+//VersionCatrin 18.10.22
 
 /*
 TO-DO 
@@ -564,6 +661,9 @@ TO-DO
 
 - Soundeffekte (essen und sterben)
 - Verschiedene Power Ups: Mehrer Punkte oder Punkteabzug
+
+- Rechts: Menü (Punktestand)
+- Bugs: Punktestand zurücksetzen beim Neustart , Farbmodus klapp noch nicht und mit Anzeige verküpfen, mehr Punkte im Farbmodus
 
 
 */
