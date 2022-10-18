@@ -20,7 +20,7 @@ public:
 	int richtung = 0;
 	
 
-	Schlangenstueck() {
+	Schlangenstueck() {															//Konstruktor
 
 		
 		x = (rand() % ((800 / schrittweite) - 1) * schrittweite);				//Erzeugung eines Schlangenstücks an einem zufälligen Ort
@@ -51,36 +51,36 @@ public:
 		}
 	}
 
-	Schlangenstueck(int x, int y, Gosu::Color farbe) {
+	Schlangenstueck(int x, int y, Gosu::Color farbe) {							//Konstruktor, konkretes Schlangenstück 
 		this->x = x;
 		this->y = y;
 		this->farbe = farbe;
 	}
 
-	Schlangenstueck(const Schlangenstueck& copy) {								//??
+	Schlangenstueck(const Schlangenstueck& copy) {								//Konstruktor, für die Liste
 		*this = copy;
 	}
 
 };
 
-class Schlange {				//class Schlange 
+class Schlange {								//class Schlange 
 public:
-	int spielfeld_x = 800;
+	int spielfeld_x = 800;			
 	int spielfeld_y = 600;
 	int schrittweite = 10;
 
-	int x = 400;					//Schlangenstartwert
+	int x = 400;								//Schlangenstartwert für den Schlangenkopf
 	int y = 300;
+	Gosu::Color farbe = Gosu::Color::GREEN;		//Im Farbmodus Farbe für ganze Schlange, ansonsten nur für den Kopf
 
-	Gosu::Color farbe = Gosu::Color::GREEN;
 	bool farbmodus = false;
 
-	int geschwindigkeit = 10;	//Geschwindigkeitsstartwert
+	int geschwindigkeit = 10;					//Geschwindigkeitsstartwert
 	int richtung = 0;
 	bool lebt = true;
 
 	std::list<Schlangenstueck> koerper = {Schlangenstueck(410, 300, Gosu::Color::GREEN), Schlangenstueck(420,300, Gosu::Color::GREEN), Schlangenstueck(430,300, Gosu::Color::GREEN)};
-	std::list<Schlangenstueck> zwischenspeicher = {};			//zwischenspeicher für gefressene Schlangenstücke
+	std::list<Schlangenstueck> zwischenspeicher = {};			//Zwischenspeicher für gefressene Schlangenstücke
 
 
 	void schlangenbewegung() {									//Bewegungsausführung in Abhängigkeit der Richtung
@@ -92,8 +92,8 @@ public:
 		}*/
 
 
-		auto vorderer_teil = koerper.rbegin();					//Schlangenstücke hinterherlaufen lassen
-		if (richtung != 0) {
+		auto vorderer_teil = koerper.rbegin();					//Schlangenstückkoordinaten schreiben vom vorderen Stück in das hintere Stück, Bewegung der Liste, Richtung egal weil hinterherlaufen
+		if (richtung != 0) {									//Schleife nur machen wenn Schlange in Bewegung									
 			for (auto hinterer_teil = vorderer_teil++; vorderer_teil != koerper.rend(); hinterer_teil = vorderer_teil++)
 			{
 				//printf("%d ", vorderer_teil->x);				//nur zum Testen
@@ -103,11 +103,11 @@ public:
 			}
 
 			//printf("\n");										//nur zum Testen
-			koerper.front().x = x;
+			koerper.front().x = x;								//Koordinatenübergabe vom Kopf an das erste Listenstück 
 			koerper.front().y = y;
 		}
 
-		if (richtung == 1) {
+		if (richtung == 1) {									//Bewegung des Schlangenkopfes, Ausführen der Bewegung 
 
 			x = x - schrittweite;
 		}
@@ -123,29 +123,29 @@ public:
 
 			y = y - schrittweite;
 		}
-		ueberprueferaender();
-		lebt = !schlange_getroffen(x, y);
+		ueberprueferaender();									//Schlange kann durch Wände laufen 
+		lebt = !schlange_getroffen(x, y);						//Überprüfung ob wir uns beim Bewegen getroffen haben, (x,y) Koordinaten des Kopfes gleich mit einem Element der Liste
 
 	}
 
 
 
 
-	bool aufsammeln(Schlangenstueck schlangenstueck) {
+	bool aufsammeln(Schlangenstueck schlangenstueck) {			//Aufsammelfunktion
 
 		
 		if (zwischenspeicher.size() > 0 && zwischenspeicher.front().x == koerper.back().x && zwischenspeicher.front().y == koerper.back().y) {
-			koerper.push_back(zwischenspeicher.front());
+			koerper.push_back(zwischenspeicher.front());		//erstes Zwischenspeicherelement anhängen wenn auf letztem Schlangenstück
 			zwischenspeicher.pop_front();
 
-			if (geschwindigkeit != 1 && (koerper.size() - 3) % 5 == 0) {
+			if (geschwindigkeit != 1 && (koerper.size() - 3) % 5 == 0) {	//Geschwindigkeitsanpassung, passiert erst wenn ein Teil angehängt also 1 und nicht 0 
 				geschwindigkeit = geschwindigkeit - 1;
 				//printf("%d ", geschwindigkeit);
 			}
 			
 		}	
 
-		if (schlangenstueck.x == x && schlangenstueck.y == y) {
+		if (schlangenstueck.x == x && schlangenstueck.y == y) {				//aufnehmen in den Zwischenspeicher mit Farbmodussonderfall
 			if (farbmodus == false || schlangenstueck.farbe == farbe) {
 				zwischenspeicher.push_back(schlangenstueck);
 
@@ -153,14 +153,14 @@ public:
 			else {
 				lebt = false;
 			}
-			return true;
+			return true;										//um zu wissen wann ich etwas aufgesammelt habe, brauche ich für andere Aktionen
 		}
 		return false;
 	}
 
 
 	void gehlinks() {				//Richtungsfestlegung
-		if (richtung != 2) {
+		if (richtung != 2) {		//ausschließen des Rückwärtsgehens
 
 			richtung = 1;
 
@@ -193,9 +193,9 @@ public:
 		richtung = 0;
 	}
 
-	void ueberprueferaender() {			//Randbetrachtung
+	void ueberprueferaender() {					//Randbetrachtung
 		if (x == spielfeld_x) {
-			x = 0;
+			x = 0;								//auf der anderen Seite wieder rauskommen
 		}
 		else if (x == - schrittweite) {
 			x = spielfeld_x - schrittweite;
@@ -209,9 +209,9 @@ public:
 
 	}
 
-	bool schlange_getroffen(int x, int y) {
-		for (auto it = koerper.begin(); it != koerper.end(); it++) {
-
+	bool schlange_getroffen(int x, int y) {		//in einer Schleife schauen ob (x,y) Koordinate von Schlangenkopf gleich mit einem Schlangenteil, (x,y) allgemein auf für andere (x,y) benutzbar 
+		for (auto it = koerper.begin(); it != koerper.end(); it++) {	//Schlangenkopf wird nicht berücksichtigt
+																		//nur Schlangenkörper wird durchgegangen
 			if (it->x == x && it->y == y) {
 				return true;
 			}
@@ -223,20 +223,20 @@ public:
 	}
 
 
-	void farbmodus_aktivieren() {
+	void farbmodus_aktivieren() {				//Setzt Frabmodus auf aktiv und macht die Schlange einfarbig (immer grün)
 		umfaerben(Gosu::Color::GREEN);
 		farbmodus = true;
 
 	}
 
-	void umfaerben(Gosu::Color farbe) {
+	void umfaerben(Gosu::Color farbe) {			//macht die Schlange einfarbig in einer beliebigen Farbe
 		for (auto it = koerper.begin(); it != koerper.end(); it++) {
-			it->farbe = farbe;
+			it->farbe = farbe;					//Körper einfärben 
 		}
 		for (auto it = zwischenspeicher.begin(); it != zwischenspeicher.end(); it++) {
-			it->farbe = farbe;
+			it->farbe = farbe;					//Zwischenspeicher einfärben
 		}
-		this->farbe = farbe;
+		this->farbe = farbe;					//Kopf einfärben 
 
 	}
 
@@ -313,15 +313,15 @@ public:
 //--------------------------------------------------INITIALISIERUNG WERTE--------------------------------------------------------
 
 	Schlange schlange = Schlange();
-	Schlangenstueck schlangenstueck = Schlangenstueck();
+	Schlangenstueck schlangenstueck = Schlangenstueck();	//nur ein (neues) Schlangenstück, das das man aufsammeln kann
 	
 
-	int x = 0;
-	int y = 0;
+	//int x = 0; 
+	//int y = 0;
 	int updatezaehler = 0;						
 	int richtung = 0;
 	int neue_richtung = 0;
-	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
+	//Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN; 
 	int schrittweite = 10;
 
 	bool schon_gedrueckt = false;
@@ -399,7 +399,12 @@ public:
 		bla.draw_text("Score: ", 810, 110, 3, 3, 3, Gosu::Color::GREEN);
 		bla.draw_text(to_string(punktestand), 820, 145, 3, 3, 3, Gosu::Color::GREEN);
 
-		graphics().draw_quad(				//Schlangenkopf (class)
+		bla.draw_text(to_string(high), 820, 500, 3,3,3,Gosu::Color::YELLOW);			//nach oben verlagert.....
+		highscore_bild.draw(870, 500, 3, 1, 1);
+
+
+
+		graphics().draw_quad(					//Schlangenkopf (class)
 			schlange.x, schlange.y, schlange.farbe,
 			schlange.x, schlange.y + schlange.schrittweite, schlange.farbe,
 			schlange.x + schlange.schrittweite, schlange.y, schlange.farbe,
@@ -407,8 +412,6 @@ public:
 			0.0
 		);
 
-		bla.draw_text(to_string(high), 820, 500, 3,3,3,Gosu::Color::YELLOW);
-		highscore_bild.draw(870, 500, 3, 1, 1);
 		
 
 		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
@@ -432,7 +435,6 @@ public:
 				0.0
 			);
 		}
-
 
 
 
@@ -541,17 +543,18 @@ public:
 
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
 
-		if (input().down(Gosu::KB_F) && farbmodus_gedrueckt == false) {
+		if (input().down(Gosu::KB_F) && farbmodus_gedrueckt == false) {	//komme nur rein wenn Taste runtergedrückt wird und vorher noch nicht gedrückt war
 
-			farbmodus_gedrueckt = true;
+			farbmodus_gedrueckt = true;									//verhindert das ich wieder in das obere if komme 
 			if (schlange.farbmodus) {
-				schlange.farbmodus = false;
+				schlange.farbmodus = false;								//wenn die Taste geklickt wurde wird der Farbmodus geändert von true auf false
 			}
 			else {
-				schlange.farbmodus_aktivieren();
+				schlange.farbmodus_aktivieren();						// von false in true
 			}
 		}
-		if (input().down(Gosu::KB_F) == false && farbmodus_gedrueckt == true)
+
+		if (input().down(Gosu::KB_F) == false && farbmodus_gedrueckt == true)	//ist Taste F aktuell nicht gedrückt
 			{
 				farbmodus_gedrueckt = false;
 			}
@@ -581,11 +584,10 @@ public:
 
 
 		}
-		if(input().down(Gosu::KB_SPACE) == false) {
+		if(input().down(Gosu::KB_SPACE) == false) {			//ist Leertaste aktuell nicht gedrückt 
 
 			schon_gedrueckt = false;
-		}
-		else {			
+		} else {											//wenn Leertaste gedrückt und gameover, setzt Dinge zurück 	
 			if (gameover) {
 				schlange = Schlange();
 				neue_richtung = 0;
@@ -598,7 +600,7 @@ public:
 
 		
 
-		if (input().down(Gosu::KB_LEFT)) {
+		if (input().down(Gosu::KB_LEFT)) {		//welche Taste wurde zuletzt gedrückt 
 			//x = x - schrittweite;
 			neue_richtung = 1;
 		}
@@ -617,19 +619,19 @@ public:
 
 
 			schlange.pause();
-			neue_richtung = 0; //geändert von richtung
+			neue_richtung = 0;			//geändert von richtung
 		
 		}
 		if (gameover) {
 			mitzaehler = 0;
 			
-					return;
+					return;				//wenn gameover gehe aus updatefunktion
 				}
 
 		updatezaehler = updatezaehler + 1;	//Zaehlt wie oft update aufgerufen wird, fuer Geschwindigkeitsanpassung(FUER BEIDE)
 		//Was passiert bei den Verschieden Richtungen (class)
-		if (updatezaehler % schlange.geschwindigkeit == 0) {
-			if (neue_richtung == 1) {
+		if (updatezaehler % schlange.geschwindigkeit == 0) {				//Bewegung nur so oft ausführen wie die Geschwindigkeit vorgibt
+			if (neue_richtung == 1) {										//gibt der Schlange die neue Richtung 
 				schlange.gehlinks();
 			}
 			else if(neue_richtung == 2) {
@@ -643,23 +645,27 @@ public:
 				schlange.gehnachoben();
 			}
 
-			schlange.schlangenbewegung();
+			schlange.schlangenbewegung();				//sorgt dafür das die Schlange sich bewegt 
 
-			if (schlange.aufsammeln(schlangenstueck)) {
+			if (schlange.aufsammeln(schlangenstueck)) {	//wenn der Schlangenkopf das Schlangenstück berührt, was passiert dann
 
 				apfel.play(1, 1, false);
-				punktestand = (schlange.koerper.size() * 5) - 10 + (mitzaehler * 5);		//fängt er bei 0 an ?? das erste hat er nicht mitgezählt, vorher 15...vllt reagiertr er aber auch nicht weil die schlangengröße zu dem zeitpunkt noch nicht verlängert ist 
+				punktestand = (schlange.koerper.size() * 5) - 10 + (mitzaehler * 5);		//Punkte pro Schlangenstück 
 				//printf("%d ", punktestand);
-				if (schlange.farbmodus == true) {						//mehr punkte im Farbmodus, funktioniert noch nicht, weil auch die Farbumstellung noch nicht immer klappt vllt 
+				if (schlange.farbmodus == true) {						//Sonderpunkte im Farbmodus pro Schlangenstück 
 					punktestand = punktestand + 5;
 					//printf("%d ", punktestand);
 					mitzaehler = mitzaehler + 1;
 				}
 				
 				hindernisse.push_back(hindernis());
+				if (punktestand > 30) { hindernisse.push_back(hindernis()); };
+				if (punktestand > 60) { hindernisse.push_back(hindernis()); };
+
 				do
 				{
 					schlangenstueck = Schlangenstueck();
+					liegt_drauf = false;
 
 					for (auto i : hindernisse)
 					{
@@ -672,10 +678,9 @@ public:
 				} while (liegt_drauf);
 				
 
-				if (punktestand > 30) { hindernisse.push_back(hindernis()); };
-				if (punktestand > 60) { hindernisse.push_back(hindernis()); };
+
 			}
-			gameover = !schlange.lebt;
+			gameover = !schlange.lebt;				//gameover setzt oder nicht jenachdem ob die Schlange in dem updateablauf gestorben ist, im nächsten updatedurchlauf ist dann gameover
 
 		}
 
@@ -698,7 +703,7 @@ int main()
 }
 
 
-//VersionCatrin 18.10.22 Nachmittags
+//VersionCatrin 18.10.22 Abends
 
 /*
 TO-DO 
