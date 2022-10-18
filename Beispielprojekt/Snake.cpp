@@ -240,17 +240,6 @@ public:
 
 	}
 
-
-	bool essgeraeusch(int x, int y)
-	{
-		if (this->x == x && this->y == y){ return true;}
-		else { return false; }
-	}
-
-	//Geschwindigkeitsanpassungsfunktion 
-	//printf("%d ", geschwindigkeit); 
-
-
 };
 
 class hindernis
@@ -299,7 +288,7 @@ Gosu::Image dunkelmodus("dunkelmodus.png");
 
 Gosu::Song musik("Hintergrundmusik.mp3");
 Gosu::Song gameover_song("Game-Over.mp3");
-Gosu::Song apfel("Apfel essen.mp3");
+Gosu::Sample apfel("Apfel essen.mp3");
 
 Gosu::Font bla(10);
 
@@ -322,19 +311,14 @@ public:
 
 	int x = 0;
 	int y = 0;
-	int updatezaehler = 0;
-	int geschwindigkeit = 30; //noch gebraucht???						
+	int updatezaehler = 0;						
 	int richtung = 0;
 	int neue_richtung = 0;
-	//int anzahlsteine = 0;
-	//int stein_x = 60;
-	//int stein_y = 70;
-	//int ergaenzung_x = 0;
-	//int ergaenzung_y = 0;
 	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
 	int schrittweite = 10;
 
 	bool schon_gedrueckt = false;
+	bool farbmodus_gedrueckt = false;
 
 	//int anzahl_essen = 0;								//ausgeben
 	int anzahl_hindernisse = 0;							//ausgeben
@@ -372,25 +356,25 @@ public:
 
 		bla.draw_text("Speed: ", 810, 200, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
 
-		if ((8 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 10)){
+		if (( schlange.geschwindigkeit ==9) || (schlange.geschwindigkeit == 10)){
 			v910.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if ((6 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 8)){
+		if (( schlange.geschwindigkeit ==7) || (schlange.geschwindigkeit == 8)){
 			v78.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if ((4 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 6)){
+		if ((schlange.geschwindigkeit == 5) || (schlange.geschwindigkeit == 6)){
 			v56.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if ((2 < schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 4)){
+		if ((schlange.geschwindigkeit==3) || (schlange.geschwindigkeit == 4)){
 			v34.draw(810, 220, 3, 0.5, 0.5);
 		};
-		if ((1 <= schlange.geschwindigkeit) && (schlange.geschwindigkeit <= 2)){
+		if ((schlange.geschwindigkeit==1) || (schlange.geschwindigkeit == 2)){
 			v12.draw(810, 220, 3, 0.5, 0.5);
 		};
 
 		//Levelanzeige
 
-		if (punktestand >= 2)
+		if (schlange.farbmodus)
 		{
 			farbmodus.draw(810, 450, 3, 1, 1);
 		}
@@ -428,16 +412,16 @@ public:
 
 		for (auto it = schlange.zwischenspeicher.begin(); it != schlange.zwischenspeicher.end(); it++) {
 
-			graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
-				it->x, it->y, it->farbe,
-				it->x, it->y + schlange.schrittweite, it->farbe,
-				it->x + schlange.schrittweite, it->y, it->farbe,
-				it->x + schlange.schrittweite, it->y + schlange.schrittweite, it->farbe,
-				0.0
-			);
+graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
+	it->x, it->y, it->farbe,
+	it->x, it->y + schlange.schrittweite, it->farbe,
+	it->x + schlange.schrittweite, it->y, it->farbe,
+	it->x + schlange.schrittweite, it->y + schlange.schrittweite, it->farbe,
+	0.0
+);
 		}
-	
-		
+
+
 
 
 		graphics().draw_quad(				//Schlangenstueck zum Essen (class)
@@ -445,12 +429,12 @@ public:
 			schlangenstueck.x, schlangenstueck.y + schlangenstueck.schrittweite, schlangenstueck.farbe,
 			schlangenstueck.x + schlangenstueck.schrittweite, schlangenstueck.y, schlangenstueck.farbe,
 			schlangenstueck.x + schlangenstueck.schrittweite, schlangenstueck.y + schlangenstueck.schrittweite, schlangenstueck.farbe,
-			0.0 
+			0.0
 		);
 
 		for (auto hindernis : hindernisse)
 		{
-			graphics().draw_quad(			
+			graphics().draw_quad(
 				hindernis.x, hindernis.y, Gosu::Color::GRAY,
 				hindernis.x, hindernis.y + schrittweite, Gosu::Color::GRAY,
 				hindernis.x + schrittweite, hindernis.y, Gosu::Color::GRAY,
@@ -462,12 +446,15 @@ public:
 			gameover_screen.draw(0, 0, 2, 1.18, 1.18);
 		}
 	}
-	
+
 	//----------------------------------------------------------UPDATE-------------------------------------------------------------------
 
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
+
+
+		printf("%d \n", schlange.geschwindigkeit);
 		//Lautstärkeeinstellung
 
 		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 860 && input().mouse_x() > 800 && input().mouse_y() < 370 && input().mouse_y() > 340)
@@ -485,16 +472,6 @@ public:
 
 		musik.set_volume(set_volume);
 		musik.play(true);		//Hintergrundmusik in Endlosschleife
-		
-		
-
-		if (schlange.essgeraeusch(schlangenstueck.x, schlangenstueck.y))					//ist nur 1/6 Sekunde an, wie verlängern?
-		{
-			//musik.pause();
-			//apfel.play(false);
-			//void Gosu::sleep(100);
-			//musik.play(true);
-		}
 
 		for (auto hindernis : hindernisse)
 		{
@@ -505,27 +482,32 @@ public:
 			};
 
 		}
-		if (gameover){																	//das klappt noch nicht *************++++++++++++++++***************+
-					musik.stop();
-					gameover_song.set_volume(set_volume);
-					gameover_song.play(false);
-					hindernisse.clear();
-				};
+		if (gameover) {																	//das klappt noch nicht *************++++++++++++++++***************+
+			musik.stop();
+			gameover_song.set_volume(set_volume);
+			gameover_song.play(false);
+			hindernisse.clear();
+		};
 
 
-		
+
 		//Pfeilzuordnungen + Pausenfunktion + wenn man in die Schlange laufen will wird die Richtung beibehalten
 
-		if (input().down(Gosu::KB_F)) {
-			
+		if (input().down(Gosu::KB_F) && farbmodus_gedrueckt == false) {
+
+			farbmodus_gedrueckt = true;
 			if (schlange.farbmodus) {
 				schlange.farbmodus = false;
 			}
 			else {
 				schlange.farbmodus_aktivieren();
 			}
-
 		}
+		if (input().down(Gosu::KB_F) == false && farbmodus_gedrueckt == true)
+			{
+				farbmodus_gedrueckt = false;
+			}
+
 		if (schon_gedrueckt == false && input().down(Gosu::KB_SPACE) && schlange.farbmodus) {
 
 			schon_gedrueckt = true;
@@ -614,7 +596,7 @@ public:
 
 			if (schlange.aufsammeln(schlangenstueck)) {
 
-				//apfel.play(1, 1, false);
+				apfel.play(1, 1, false);
 				punktestand = (schlange.koerper.size() * 5) - 10;		//fängt er bei 0 an ?? das erste hat er nicht mitgezählt, vorher 15...vllt reagiertr er aber auch nicht weil die schlangengröße zu dem zeitpunkt noch nicht verlängert ist 
 				//printf("%d ", punktestand);
 				if (schlange.farbmodus == true) {						//mehr punkte im Farbmodus, funktioniert noch nicht, weil auch die Farbumstellung noch nicht immer klappt vllt 
@@ -661,6 +643,7 @@ TO-DO
 
 - Soundeffekte (essen und sterben)
 - Verschiedene Power Ups: Mehrer Punkte oder Punkteabzug
+
 - Rechts: Menü (Punktestand)
 - Bugs: Punktestand zurücksetzen beim Neustart , Farbmodus klapp noch nicht und mit Anzeige verküpfen, mehr Punkte im Farbmodus
 
