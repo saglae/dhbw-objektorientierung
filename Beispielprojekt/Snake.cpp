@@ -215,8 +215,6 @@ public:
 			if (it->x == x && it->y == y) {
 				return true;
 			}
-
-
 		}
 		return false;
 
@@ -226,7 +224,6 @@ public:
 	void farbmodus_aktivieren() {
 		umfaerben(Gosu::Color::GREEN);
 		farbmodus = true;
-
 	}
 
 	void umfaerben(Gosu::Color farbe) {
@@ -237,9 +234,7 @@ public:
 			it->farbe = farbe;
 		}
 		this->farbe = farbe;
-
 	}
-
 };
 
 class hindernis
@@ -257,12 +252,10 @@ public:
 
 	bool hindernis_getroffen(Schlange s)
 	{
-		if ((s.x == this->x) && (s.y == this->y))
-		{
+		if ((s.x == this->x) && (s.y == this->y)){
 			return true;
 		}
-		else
-		{
+		else{
 			return false;
 		}
 	}
@@ -295,6 +288,7 @@ Gosu::Image aua("aua.png");
 
 Gosu::Song musik("Hintergrundmusik.mp3");
 Gosu::Sample gameover_song("Game-Over.mp3");
+Gosu::Sample verloren("verloren.wav");
 Gosu::Sample apfel("Apfel essen.mp3");
 
 Gosu::Font bla(15,"Pixeled.ttf");
@@ -465,25 +459,15 @@ public:
 		{
 			tutorial1.draw(600, 400, -1);
 		}
-
 		if (punktestand == 5)
 		{
 			tutorial2.draw(600, 400, -1);
 		}
-
 		if (punktestand == 10)
 		{
 			tutorial3.draw(600, 400, -1);
 		}
-
-
 	}
-
-
-	
-
-	
-
 
 
 	//----------------------------------------------------------UPDATE-------------------------------------------------------------------
@@ -532,7 +516,7 @@ public:
 		if (gameover) {				
 			
 			highscore.push_back(punktestand);
-			//gameover_song.play();
+			//verloren.play();
 			hindernisse.clear();
 		};
 
