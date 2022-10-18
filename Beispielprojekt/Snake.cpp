@@ -337,6 +337,8 @@ public:
 	int punktestand = 0;
 	int mitzaehler = 0;
 	double set_volume = 0.5;
+
+	bool liegt_drauf = false;
 	
 	vector<int> highscore;
 	int high = 0;
@@ -654,9 +656,21 @@ public:
 					mitzaehler = mitzaehler + 1;
 				}
 				
-
-				schlangenstueck = Schlangenstueck();
 				hindernisse.push_back(hindernis());
+				do
+				{
+					schlangenstueck = Schlangenstueck();
+
+					for (auto i : hindernisse)
+					{
+						if ((schlangenstueck.x == i.x) && (schlangenstueck.y == i.y)) {
+							liegt_drauf = true;
+							break;
+						}
+					}
+
+				} while (liegt_drauf);
+				
 
 				if (punktestand > 30) { hindernisse.push_back(hindernis()); };
 				if (punktestand > 60) { hindernisse.push_back(hindernis()); };
