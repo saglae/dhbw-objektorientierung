@@ -284,12 +284,14 @@ Gosu::Image v910("v910.png");
 Gosu::Image menu("menu.png");
 Gosu::Image farbmodus("farbmodus.png");
 Gosu::Image dunkelmodus("dunkelmodus.png");
+Gosu::Image highscore_bild("highscore.png");
 
 Gosu::Image tutorial1("tutorial1.png");
 Gosu::Image tutorial2("tutorial2.png");
 Gosu::Image tutorial3("tutorial3.png");
 Gosu::Image neustart("neustart.png");
 Gosu::Image aua("aua.png");
+
 
 Gosu::Song musik("Hintergrundmusik.mp3");
 Gosu::Sample gameover_song("Game-Over.mp3");
@@ -336,7 +338,8 @@ public:
 	int mitzaehler = 0;
 	double set_volume = 0.5;
 	
-
+	vector<int> highscore;
+	int high = 0;
 	vector<hindernis> hindernisse;
 
 	//------------------------------------------------------------DRAW----------------------------------------------------------------------
@@ -402,6 +405,8 @@ public:
 			0.0
 		);
 
+		bla.draw_text(to_string(high), 820, 500, 3,3,3,Gosu::Color::YELLOW);
+		highscore_bild.draw(870, 500, 3, 1, 1);
 		
 
 		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
@@ -514,11 +519,21 @@ public:
 			};
 
 		}
+
+		for (auto i : highscore)
+		{
+			if (high < i)
+			{
+				high = i;
+			}
+		}
 		if (gameover) {				
 			
+			highscore.push_back(punktestand);
 			//gameover_song.play();
 			hindernisse.clear();
 		};
+
 
 
 
