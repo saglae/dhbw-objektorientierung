@@ -287,10 +287,10 @@ Gosu::Image farbmodus("farbmodus.png");
 Gosu::Image dunkelmodus("dunkelmodus.png");
 
 Gosu::Song musik("Hintergrundmusik.mp3");
-Gosu::Song gameover_song("Game-Over.mp3");
+Gosu::Sample gameover_song("Game-Over.mp3");
 Gosu::Sample apfel("Apfel essen.mp3");
 
-Gosu::Font bla(10);
+Gosu::Font bla(10,"Pixeled.ttf");
 
 
 class GameWindow : public Gosu::Window
@@ -396,8 +396,7 @@ public:
 			0.0
 		);
 
-
-
+		
 
 		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
 
@@ -454,7 +453,7 @@ graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
 	{
 
 
-		printf("%d \n", schlange.geschwindigkeit);
+		//printf("%d \n", schlange.geschwindigkeit);
 		//Lautstärkeeinstellung
 
 		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 860 && input().mouse_x() > 800 && input().mouse_y() < 370 && input().mouse_y() > 340)
@@ -482,10 +481,9 @@ graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
 			};
 
 		}
-		if (gameover) {																	//das klappt noch nicht *************++++++++++++++++***************+
-			musik.stop();
-			gameover_song.set_volume(set_volume);
-			gameover_song.play(false);
+		if (gameover) {				
+			
+			//gameover_song.play();
 			hindernisse.clear();
 		};
 
