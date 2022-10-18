@@ -23,9 +23,9 @@ public:
 	Schlangenstueck() {
 
 		
-		x = (rand() % ((800 / schrittweite) - 1) * schrittweite);
+		x = (rand() % ((800 / schrittweite) - 1) * schrittweite);				//Erzeugung eines Schlangenstücks an einem zufälligen Ort
 		y = (rand() % ((600 / schrittweite) - 1) * schrittweite);
-		int farbwahl = (rand() % 5);
+		int farbwahl = (rand() % 5);											//mit zufälliger Farbe
 
 		if(farbwahl == 0){
 
@@ -57,7 +57,7 @@ public:
 		this->farbe = farbe;
 	}
 
-	Schlangenstueck(const Schlangenstueck& copy) {
+	Schlangenstueck(const Schlangenstueck& copy) {								//??
 		*this = copy;
 	}
 
@@ -80,10 +80,10 @@ public:
 	bool lebt = true;
 
 	std::list<Schlangenstueck> koerper = {Schlangenstueck(410, 300, Gosu::Color::GREEN), Schlangenstueck(420,300, Gosu::Color::GREEN), Schlangenstueck(430,300, Gosu::Color::GREEN)};
-	std::list<Schlangenstueck> zwischenspeicher = {};
+	std::list<Schlangenstueck> zwischenspeicher = {};			//zwischenspeicher für gefressene Schlangenstücke
 
 
-	void schlangenbewegung() {			//Bewegungsausführung in Abhängigkeit der Richtung
+	void schlangenbewegung() {									//Bewegungsausführung in Abhängigkeit der Richtung
 
 		/*auto itr1 = map.begin();
 		for (auto itr2 = itr1++; itr1 != map.end(); itr2 = itr1++)
@@ -96,13 +96,13 @@ public:
 		if (richtung != 0) {
 			for (auto hinterer_teil = vorderer_teil++; vorderer_teil != koerper.rend(); hinterer_teil = vorderer_teil++)
 			{
-				//printf("%d ", vorderer_teil->x);		//nur zum Testen
+				//printf("%d ", vorderer_teil->x);				//nur zum Testen
 				hinterer_teil->x = vorderer_teil->x;
 				hinterer_teil->y = vorderer_teil->y;
 
 			}
 
-			//printf("\n"); //nur zum Testen
+			//printf("\n");										//nur zum Testen
 			koerper.front().x = x;
 			koerper.front().y = y;
 		}
