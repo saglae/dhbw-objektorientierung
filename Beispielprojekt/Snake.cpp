@@ -25,7 +25,7 @@ public:
 		
 		x = (rand() % ((800 / schrittweite) - 1) * schrittweite);
 		y = (rand() % ((600 / schrittweite) - 1) * schrittweite);
-		int farbwahl = (rand() % 3);
+		int farbwahl = (rand() % 5);
 
 		if(farbwahl == 0){
 
@@ -40,6 +40,14 @@ public:
 		else if (farbwahl == 2) {
 
 			farbe = Gosu::Color::YELLOW;
+		}
+		else if (farbwahl == 3) {
+
+			farbe = Gosu::Color::FUCHSIA;
+		}
+		else if (farbwahl == 4) {
+
+			farbe = Gosu::Color::AQUA;
 		}
 	}
 
@@ -315,20 +323,20 @@ public:
 	int x = 0;
 	int y = 0;
 	int updatezaehler = 0;
-	int geschwindigkeit = 30;							
+	int geschwindigkeit = 30; //noch gebraucht???						
 	int richtung = 0;
 	int neue_richtung = 0;
-	int anzahlsteine = 0;
-	int stein_x = 60;
-	int stein_y = 70;
-	int ergaenzung_x = 0;
-	int ergaenzung_y = 0;
+	//int anzahlsteine = 0;
+	//int stein_x = 60;
+	//int stein_y = 70;
+	//int ergaenzung_x = 0;
+	//int ergaenzung_y = 0;
 	Gosu::Color ergaenzung_farbe = Gosu::Color::GREEN;
 	int schrittweite = 10;
 
 	bool schon_gedrueckt = false;
 
-	int anzahl_essen = 0;								//ausgeben
+	//int anzahl_essen = 0;								//ausgeben
 	int anzahl_hindernisse = 0;							//ausgeben
 	int hinderniss_x;
 	int hinderniss_y;
@@ -607,9 +615,11 @@ public:
 			if (schlange.aufsammeln(schlangenstueck)) {
 
 				//apfel.play(1, 1, false);
-				punktestand = (schlange.koerper.size() * 5) - 15;
+				punktestand = (schlange.koerper.size() * 5) - 10;		//fängt er bei 0 an ?? das erste hat er nicht mitgezählt, vorher 15...vllt reagiertr er aber auch nicht weil die schlangengröße zu dem zeitpunkt noch nicht verlängert ist 
 				//printf("%d ", punktestand);
-
+				if (schlange.farbmodus == true) {						//mehr punkte im Farbmodus, funktioniert noch nicht, weil auch die Farbumstellung noch nicht immer klappt vllt 
+					punktestand = punktestand + 5;
+				}
 				
 
 				schlangenstueck = Schlangenstueck();
@@ -623,39 +633,7 @@ public:
 		}
 
 
-		//gehört zur alten schlange!!!!!!!
-		//neuen Stein erzeugen wenn die Schlange die gleichen x, y Koordinate hat, Geschwindigkeitsanpassung bei 5 zusätzlichen Steinen
-		/*if (anzahlsteine == 0) {
 
-			stein_x = (rand() % 800 / schrittweite - 1) * schrittweite;
-			stein_y = (rand() % 600 / schrittweite -1) * schrittweite;
-			anzahlsteine = anzahlsteine + 1;
-
-		}
-
-
-		if (x == stein_x && y == stein_y) {
-
-
-
-			ergaenzung_x = stein_x;
-			ergaenzung_y = stein_y;
-			ergaenzung_farbe = 
-			anzahlsteine = 0;
-			anzahl_essen = anzahl_essen + 1;
-
-			if (anzahl_essen % 5 == 0) {
-
-				geschwindigkeit = geschwindigkeit - 1;			//Einteilung in 5 Geschwindigkeitstufen 
-
-				if (geschwindigkeit == 0) {
-					//was soll dann passieren?? Spiel gewonnen? oder bei Geschwindigkeit = 1 lassen?				Würde die bei 1 lassen und beliebig lang laufen lassen
-				}
-			}
-			
-		} else {
-			anzahlsteine = 1;
-		}*/
 	}
 	
 };
@@ -673,7 +651,7 @@ int main()
 }
 
 
-//Gemeinsame Version17.10.22
+//VersionCatrin 18.10.22
 
 /*
 TO-DO 
@@ -684,5 +662,7 @@ TO-DO
 - Soundeffekte (essen und sterben)
 - Verschiedene Power Ups: Mehrer Punkte oder Punkteabzug
 - Rechts: Menü (Punktestand)
+- Bugs: Punktestand zurücksetzen beim Neustart , Farbmodus klapp noch nicht und mit Anzeige verküpfen, mehr Punkte im Farbmodus
+
 
 */
