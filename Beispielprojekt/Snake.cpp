@@ -282,15 +282,20 @@ Gosu::Image v56("v56.png");
 Gosu::Image v78("v78.png");
 Gosu::Image v910("v910.png");
 Gosu::Image menu("menu.png");
-Gosu::Image gameover_screen("gameoverscreen.png");
 Gosu::Image farbmodus("farbmodus.png");
 Gosu::Image dunkelmodus("dunkelmodus.png");
 
+Gosu::Image tutorial1("tutorial1.png");
+Gosu::Image tutorial2("tutorial2.png");
+Gosu::Image tutorial3("tutorial3.png");
+Gosu::Image neustart("neustart.png");
+Gosu::Image aua("aua.png");
+
 Gosu::Song musik("Hintergrundmusik.mp3");
-Gosu::Song gameover_song("Game-Over.mp3");
+Gosu::Sample gameover_song("Game-Over.mp3");
 Gosu::Sample apfel("Apfel essen.mp3");
 
-Gosu::Font bla(10);
+Gosu::Font bla(15,"Pixeled.ttf");
 
 
 class GameWindow : public Gosu::Window
@@ -346,7 +351,7 @@ public:
 
 		//Lautstärkeicons
 
-		bla.draw_text("Volume:", 810, 300, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Volume:", 810, 300, 3, 3, 3, Gosu::Color::GREEN);
 
 		musikaus.draw(800, 320, 3,0.3,0.3);
 		musikleise.draw(850, 320, 3,0.3,0.3);
@@ -355,7 +360,7 @@ public:
 
 		//Geschwindigkeitsanzeige
 
-		bla.draw_text("Speed: ", 810, 200, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Speed: ", 810, 200, 3, 3, 3, Gosu::Color::GREEN);
 
 		if (( schlange.geschwindigkeit ==9) || (schlange.geschwindigkeit == 10)){
 			v910.draw(810, 220, 3, 0.5, 0.5);
@@ -386,7 +391,7 @@ public:
 
 		//Scoreanzeige
 
-		bla.draw_text("Score: ", 810, 110, 3, 3, 3, Gosu::Color::GREEN, Gosu::BlendMode::BM_ADD);
+		bla.draw_text("Score: ", 810, 110, 3, 3, 3, Gosu::Color::GREEN);
 		bla.draw_text(to_string(punktestand), 820, 145, 3, 3, 3, Gosu::Color::GREEN);
 
 		graphics().draw_quad(				//Schlangenkopf (class)
@@ -397,8 +402,7 @@ public:
 			0.0
 		);
 
-
-
+		
 
 		for (auto it = schlange.koerper.begin(); it != schlange.koerper.end(); it++) {
 
@@ -444,9 +448,36 @@ public:
 		};
 
 		if (gameover) {
-			gameover_screen.draw(0, 0, 2, 1.18, 1.18);
+			aua.draw(0, 0, 2, 1.65, 1.65);
+			neustart.draw(600, 400, 3);
 		}
+			
+		//Tutorial
+
+		if (schlange.richtung == 0)
+		{
+			tutorial1.draw(600, 400, -1);
+		}
+
+		if (punktestand == 5)
+		{
+			tutorial2.draw(600, 400, -1);
+		}
+
+		if (punktestand == 10)
+		{
+			tutorial3.draw(600, 400, -1);
+		}
+
+
 	}
+
+
+	
+
+	
+
+
 
 	//----------------------------------------------------------UPDATE-------------------------------------------------------------------
 
@@ -483,10 +514,9 @@ public:
 			};
 
 		}
-		if (gameover) {																	//das klappt noch nicht *************++++++++++++++++***************+
-			musik.stop();
-			gameover_song.set_volume(set_volume);
-			gameover_song.play(false);
+		if (gameover) {				
+			
+			//gameover_song.play();
 			hindernisse.clear();
 		};
 
@@ -613,8 +643,8 @@ public:
 				schlangenstueck = Schlangenstueck();
 				hindernisse.push_back(hindernis());
 
-				if (punktestand > 10) { hindernisse.push_back(hindernis()); };
-				if (punktestand > 20) { hindernisse.push_back(hindernis()); };
+				if (punktestand > 30) { hindernisse.push_back(hindernis()); };
+				if (punktestand > 60) { hindernisse.push_back(hindernis()); };
 			}
 			gameover = !schlange.lebt;
 
