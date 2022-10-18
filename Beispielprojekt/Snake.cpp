@@ -320,7 +320,7 @@ public:
 	bool schon_gedrueckt = false;
 	bool farbmodus_gedrueckt = false;
 
-	//int anzahl_essen = 0;								//ausgeben
+	
 	int anzahl_hindernisse = 0;							//ausgeben
 	int hinderniss_x;
 	int hinderniss_y;
@@ -328,6 +328,7 @@ public:
 
 	bool gameover = false;								//für die Sterbefunktion
 	int punktestand = 0;
+	int mitzaehler = 0;
 	double set_volume = 0.5;
 	
 
@@ -412,13 +413,13 @@ public:
 
 		for (auto it = schlange.zwischenspeicher.begin(); it != schlange.zwischenspeicher.end(); it++) {
 
-graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
-	it->x, it->y, it->farbe,
-	it->x, it->y + schlange.schrittweite, it->farbe,
-	it->x + schlange.schrittweite, it->y, it->farbe,
-	it->x + schlange.schrittweite, it->y + schlange.schrittweite, it->farbe,
-	0.0
-);
+			graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
+				it->x, it->y, it->farbe,
+				it->x, it->y + schlange.schrittweite, it->farbe,
+				it->x + schlange.schrittweite, it->y, it->farbe,
+				it->x + schlange.schrittweite, it->y + schlange.schrittweite, it->farbe,
+				0.0
+			);
 		}
 
 
@@ -454,7 +455,7 @@ graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
 	{
 
 
-		printf("%d \n", schlange.geschwindigkeit);
+		//printf("%d \n", schlange.geschwindigkeit);
 		//Lautstärkeeinstellung
 
 		if (input().down(Gosu::MS_LEFT) && input().mouse_x() < 860 && input().mouse_x() > 800 && input().mouse_y() < 370 && input().mouse_y() > 340)
@@ -541,6 +542,7 @@ graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
 			if (gameover) {
 				schlange = Schlange();
 				neue_richtung = 0;
+				punktestand = 0;
 				gameover = false;
 			}
 
@@ -572,6 +574,8 @@ graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
 		
 		}
 		if (gameover) {
+			mitzaehler = 0;
+			
 					return;
 				}
 
@@ -597,10 +601,12 @@ graphics().draw_quad(				//Schlangenstueck vom Zwischenspeicher (class)
 			if (schlange.aufsammeln(schlangenstueck)) {
 
 				apfel.play(1, 1, false);
-				punktestand = (schlange.koerper.size() * 5) - 10;		//fängt er bei 0 an ?? das erste hat er nicht mitgezählt, vorher 15...vllt reagiertr er aber auch nicht weil die schlangengröße zu dem zeitpunkt noch nicht verlängert ist 
+				punktestand = (schlange.koerper.size() * 5) - 10 + (mitzaehler * 5);		//fängt er bei 0 an ?? das erste hat er nicht mitgezählt, vorher 15...vllt reagiertr er aber auch nicht weil die schlangengröße zu dem zeitpunkt noch nicht verlängert ist 
 				//printf("%d ", punktestand);
 				if (schlange.farbmodus == true) {						//mehr punkte im Farbmodus, funktioniert noch nicht, weil auch die Farbumstellung noch nicht immer klappt vllt 
 					punktestand = punktestand + 5;
+					//printf("%d ", punktestand);
+					mitzaehler = mitzaehler + 1;
 				}
 				
 
@@ -633,7 +639,7 @@ int main()
 }
 
 
-//VersionCatrin 18.10.22
+//VersionCatrin 18.10.22 Nachmittags
 
 /*
 TO-DO 
@@ -646,6 +652,7 @@ TO-DO
 
 - Rechts: Menü (Punktestand)
 - Bugs: Punktestand zurücksetzen beim Neustart , Farbmodus klapp noch nicht und mit Anzeige verküpfen, mehr Punkte im Farbmodus
+        Hindernisse und Schlangenstücke dürfen nicht auf dem selben Platz liegen 
 
 
 */
