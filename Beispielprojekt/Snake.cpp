@@ -564,6 +564,6 @@ TO-DO
 
 - Soundeffekte (essen und sterben)
 - Verschiedene Power Ups: Mehrer Punkte oder Punkteabzug
-- Rechts: Menü (Punktestand)
+
 
 */
