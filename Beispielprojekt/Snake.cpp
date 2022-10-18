@@ -527,8 +527,8 @@ public:
 
 		}
 		if (schon_gedrueckt == false && input().down(Gosu::KB_SPACE) && schlange.farbmodus) {
-			schon_gedrueckt = true;
 
+			schon_gedrueckt = true;
 
 
 			if (schlange.farbe == Gosu::Color::GREEN) {
