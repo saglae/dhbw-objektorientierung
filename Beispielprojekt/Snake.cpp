@@ -269,6 +269,7 @@ Gosu::Image menu("menu.png");
 Gosu::Image farbmodus("farbmodus.png");
 Gosu::Image dunkelmodus("dunkelmodus.png");
 Gosu::Image highscore_bild("highscore.png");
+Gosu::Image gewinnen("gewonnen.png");
 
 Gosu::Image tutorial1("tutorial1.png");
 Gosu::Image tutorial2("tutorial2.png");
@@ -325,6 +326,15 @@ public:
 	//------------------------------------------------------------DRAW----------------------------------------------------------------------
 	void draw() override
 	{
+
+		//NUR FÜR DIE GEWINNER
+
+		//schlange.geschwindigkeit = 1;
+
+		if (schlange.geschwindigkeit == 1)
+		{
+			gewinnen.draw(0, 0, 5, 2, 2);
+		}
 
 		//Bilder
 		hintergrundbild.draw(240, 150, 0, 1, 1);									
